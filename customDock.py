@@ -63,6 +63,10 @@ class controlWidget(QWidget):
         mainLayout.addWidget(self.stepsSlider)
         self.setLayout(mainLayout)
         
+        self.stepsCount.editingFinished.connect(self.parent.gotoSpecifiedStep)
+        self.stepsSlider.valueChanged.connect(self.stepsCount.setValue)
+        self.stepsSlider.sliderReleased.connect(self.parent.gotoSpecifiedStep)
+        
 class stepsTreeDock(QDockWidget):
     
     def __init__(self, title, parent = None):
