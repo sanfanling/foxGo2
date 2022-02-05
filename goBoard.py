@@ -96,8 +96,8 @@ class goBoard(QLabel):
         px, py = self.boardToGo((self.x, self.y))
         hasStone = (px, py) in self.parent.thisGame.stepsGoDict
         if e.button() == Qt.LeftButton and self.parent.mode == "free" and self.inBoard and not hasStone:
-            #if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
-                #self.parent.restartFreeAndTestMode()
+            if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
+                self.parent.restartFreeAndTestMode()
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
             moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
             if moveSuccess:
@@ -120,8 +120,8 @@ class goBoard(QLabel):
                 self.update()
                 #self.parent.makeSound(moveSuccess, deadChessNum)
         elif e.button() == Qt.LeftButton and self.parent.mode == "test" and self.inBoard and not hasStone:
-            #if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
-                #self.parent.restartFreeAndTestMode()
+            if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
+                self.parent.restartFreeAndTestMode()
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
             moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
             if moveSuccess:
@@ -171,8 +171,8 @@ class goBoard(QLabel):
             p.drawLine(self.boardEdge, self.boardEdge + self.cellSize * i, self.boardEdge + self.cellSize * (self.boardSize - 1), self.boardEdge + self.cellSize * i,)
             p.drawLine(self.boardEdge + self.cellSize * i, self.boardEdge, self.boardEdge + self.cellSize * i, self.boardEdge + self.cellSize * (self.boardSize - 1))
             if self.withCoordinate:
-                p.drawText(self.boardEdge - 20, self.boardEdge + self.cellSize * i + self.fontInfo.boundingRect(str(i + 1)).height()//3, str(i + 1))
-                p.drawText(self.boardEdge + self.cellSize * i - self.fontInfo.boundingRect(chr(i + 65)).width()//2, self.boardEdge - 10, chr(i + 65))
+                p.drawText(self.boardEdge - 25, self.boardEdge + self.cellSize * i + self.fontInfo.boundingRect(str(i + 1)).height()//3, str(i + 1))
+                p.drawText(self.boardEdge + self.cellSize * i - self.fontInfo.boundingRect(chr(i + 65)).width()//2, self.boardEdge - 15, chr(i + 65))
         if self.boardSize == 19:
             dotPosition = ((4, 4), (4, 10), (4, 16), (10, 4), (10, 10), (10, 16), (16, 4), (16, 10), (16, 16))
         elif self.boardSize == 9:

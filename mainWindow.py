@@ -133,6 +133,11 @@ class mainWindow(baseWindow):
         self.showStepsCount()
         self.moveOnBoard()
     
+    def gotoSpecifiedStep(self):
+        self.stepPoint = self.controlDock.controlWidget.stepsCount.value() + self.breakPoint
+        self.controlDock.controlWidget.stepsSlider.setValue(self.controlDock.controlWidget.stepsCount.value())
+        self.moveOnBoard()
+    
     def backAction_(self):
         self.mode = "review"
         self.modeLabel.setText("Current mode: Review")
@@ -174,10 +179,10 @@ class mainWindow(baseWindow):
             self.thisGame.x = x
             self.thisGame.y = y
             moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
+            self.thisGame.changeColor()
         self.board.update()
         #self.makeSound(moveSuccess, deadChessNum)
-        if self.mode == "review" or self.mode == "test":
-            self.thisGame.changeColor()
+        
     
     def fileOpen_(self):
         fileName, y= QFileDialog.getOpenFileName(None, "Open a SGF file", "./", "Go records file(*.sgf)")
