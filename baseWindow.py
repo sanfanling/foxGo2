@@ -114,12 +114,16 @@ class baseWindow(QMainWindow):
         
         boardStyleMenu = boardMenu.addMenu("Board style")
         self.styleGroup = QActionGroup(self)
+        self.boardNoStyle = QAction("None")
         self.boardStyle1 = QAction("Style1")
         self.boardStyle2 = QAction("Style2")
+        self.boardNoStyle.setCheckable(True)
         self.boardStyle1.setCheckable(True)
         self.boardStyle2.setCheckable(True)
+        self.styleGroup.addAction(self.boardNoStyle)
         self.styleGroup.addAction(self.boardStyle1)
         self.styleGroup.addAction(self.boardStyle2)
+        boardStyleMenu.addAction(self.boardNoStyle)
         boardStyleMenu.addAction(self.boardStyle1)
         boardStyleMenu.addAction(self.boardStyle2)
         

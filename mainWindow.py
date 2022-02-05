@@ -28,6 +28,11 @@ class mainWindow(baseWindow):
             self.musicEquipment.play()
         self.effectSounds.setChecked(self.settingData.effectSounds)
         self.effectEquipment = QSoundEffect()
+        if self.settingData.boardStyle == "style1":
+            self.boardStyle1.setChecked(True)
+        elif self.settingData.boardStyle == "style2":
+            self.boardStyle2.setChecked(True)
+        self.board.setBoardStyle(self.settingData.boardStyle)
         
         self.sgfData = sgfData()
         self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
@@ -39,6 +44,9 @@ class mainWindow(baseWindow):
         self.hideCursor.toggled.connect(self.hideCursor_)
         self.backgroundMusic.toggled.connect(self.backgroundMusic_)
         self.effectSounds.toggled.connect(self.effectSounds_)
+        self.boardStyle1.triggered.connect(self.changeBoardStyle_)
+        self.boardStyle2.triggered.connect(self.changeBoardStyle_)
+        self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
         self.quit.triggered.connect(self.close)
         
         
@@ -243,6 +251,10 @@ class mainWindow(baseWindow):
     
     def effectSounds_(self, b):
         self.settingData.effectSounds = b
+    
+    def changeBoardStyle_(self):
+        style = self.sender().text().lower()
+        self.board.setBoardStyle(style)
     
     def closeEvent(self, e):
         os.remove(os.path.expanduser("~/.foxGo2/lock"))

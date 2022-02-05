@@ -55,7 +55,7 @@ class goBoard(QLabel):
         self.parent = parent
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.boardSize = size
-        self.setBoardStyle(stylePath)
+        #self.setBoardStyle(stylePath)
         self.setSizePara(30)
         self.thinLine = 1
         self.thickLine = 3
@@ -76,8 +76,11 @@ class goBoard(QLabel):
         self.update()
         
     
-    def setBoardStyle(self, stylePath):
-        self.setStyleSheet("QLabel{background-image: url(%s)}" %stylePath)
+    def setBoardStyle(self, style):
+        if style == "none":
+            self.setStyleSheet("")
+        else:
+            self.setStyleSheet("QLabel{background-image: url(res/pictures/%s.png)}" %style)
     
     def mouseMoveEvent(self, e):
         self.x = e.x()
