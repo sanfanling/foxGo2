@@ -26,8 +26,23 @@ class settingData:
         self.withCoordinate = self.cf.getboolean("board", "withcoordinate")
         self.stepsNumber = self.cf.get("board", "stepsnumber")
         self.boardStyle = self.cf.get("board", "boardstyle")
-        self.hideCursor = self.cf.getboolean("board", "hidecusror")
+        self.hideCursor = self.cf.getboolean("board", "hidecursor")
         self.windowState = self.cf.get("session", "windowstate")
+    
+    def setSettingData(self):
+        self.cf.set("general", "sgfpath", str(self.sgfPath))
+        self.cf.set("general", "backgroundmusic", str(self.backgroundMusic))
+        self.cf.set("general", "musicpath", str(self.musicPath))
+        self.cf.set("general", "effectsounds", str(self.effectSounds))
+        self.cf.set("board", "withcoordinate", str(self.withCoordinate))
+        self.cf.set("board", "stepsnumber", str(self.stepsNumber))
+        self.cf.set("board", "boardstyle", str(self.boardStyle))
+        self.cf.set("board", "hidecursor", str(self.hideCursor))
+        self.cf.set("session", "windowstate", str(self.windowState))
+    
+    def writeToFile(self):
+        with open(self.fileName, "w") as f:
+            self.cf.write(f)
         
     
     def initConfigfile(self):
@@ -48,7 +63,7 @@ class settingData:
         withcoordinate = True
         stepsnumber = hide
         boardstyle = style2
-        hidecusror = False
+        hidecursor = False
         
         [session]
         windowstate = 

@@ -32,6 +32,8 @@ class mainWindow(baseWindow):
             self.boardStyle1.setChecked(True)
         elif self.settingData.boardStyle == "style2":
             self.boardStyle2.setChecked(True)
+        else:
+            self.boardNoStyle.setChecked(True)
         self.board.setBoardStyle(self.settingData.boardStyle)
         
         self.sgfData = sgfData()
@@ -254,10 +256,13 @@ class mainWindow(baseWindow):
     
     def changeBoardStyle_(self):
         style = self.sender().text().lower()
+        self.settingData.boardStyle = style
         self.board.setBoardStyle(style)
     
     def closeEvent(self, e):
         os.remove(os.path.expanduser("~/.foxGo2/lock"))
+        self.settingData.setSettingData()
+        self.settingData.writeToFile()
         e.accept()
 
 
