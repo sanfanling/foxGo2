@@ -94,12 +94,43 @@ class goBoard(QLabel):
     
     def mousePressEvent(self, e):
         px, py = self.boardToGo((self.x, self.y))
-        if e.button() == Qt.LeftButton and self.inBoard and (px, py) not in self.parent.thisGame.stepsGoDict:
-            self.parent.thisGame.x = px
-            self.parent.thisGame.y = py
+        hasStone = (px, py) in self.parent.thisGame.stepsGoDict
+        if e.button() == Qt.LeftButton and self.parent.mode == "free" and self.inBoard and not hasStone:
+            #if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
+                #self.parent.restartFreeAndTestMode()
+            self.parent.thisGame.x, self.parent.thisGame.y = px, py
             moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
             if moveSuccess:
+                self.parent.sgfData.stepsList.append((self.parent.thisGame.stepNum, self.parent.thisGame.goColor, self.parent.thisGame.x, self.parent.thisGame.y))
+                self.parent.thisGame.changeColor()
+                self.parent.stepPoint += 1
+                self.parent.showStepsCount(True)
                 self.update()
+                #self.parent.makeSound(moveSuccess, deadChessNum)
+        elif e.button() == Qt.LeftButton and self.parent.mode == "review" and self.inBoard and not hasStone:
+            self.parent.startTestMode()
+            self.parent.thisGame.stepNum = 0
+            self.parent.thisGame.x, self.parent.thisGame.y = px, py
+            moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
+            if moveSuccess:
+                self.parent.sgfData.stepsList.append((self.parent.thisGame.stepNum, self.parent.thisGame.goColor, self.parent.thisGame.x, self.parent.thisGame.y))
+                self.parent.thisGame.changeColor()
+                self.parent.stepPoint += 1
+                self.parent.showStepsCount(True)
+                self.update()
+                #self.parent.makeSound(moveSuccess, deadChessNum)
+        elif e.button() == Qt.LeftButton and self.parent.mode == "test" and self.inBoard and not hasStone:
+            #if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
+                #self.parent.restartFreeAndTestMode()
+            self.parent.thisGame.x, self.parent.thisGame.y = px, py
+            moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
+            if moveSuccess:
+                self.parent.sgfData.stepsList.append((self.parent.thisGame.stepNum, self.parent.thisGame.goColor, self.parent.thisGame.x, self.parent.thisGame.y))
+                self.parent.thisGame.changeColor()
+                self.parent.stepPoint += 1
+                self.parent.showStepsCount(True)
+                self.update()
+                #self.parent.makeSound(moveSuccess, deadChessNum)
         if e.button() == Qt.RightButton and self.inBoard:
             self.parent.thisGame.makeStepPass()
     

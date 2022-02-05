@@ -15,6 +15,7 @@ class mainWindow(baseWindow):
         super().__init__()
         
         self.sgfData = sgfData()
+        self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
         self.startFreeMode()
         
         self.newGame.triggered.connect(self.startFreeMode)
@@ -32,6 +33,8 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.fastNextButton.clicked.connect(self.fastNextAction_)
         self.toEndAction.triggered.connect(self.toEndAction_)
         self.controlDock.controlWidget.toEndButton.clicked.connect(self.toEndAction_)
+        self.backAction.triggered.connect(self.backAction_)
+        self.controlDock.controlWidget.backButton.clicked.connect(self.backAction_)
     
     def startFreeMode(self):
         self.mode = "free"
@@ -40,6 +43,11 @@ class mainWindow(baseWindow):
         self.thisGame.init()
         self.stepPoint = 0
         self.breakPoint = 0
+        self.backAction.setEnabled(False)
+        self.controlDock.controlWidget.backButton.setEnabled(False)
+        self.resignAction.setEnabled(False)
+        self.controlDock.controlWidget.resignAction.setEnabled(False)
+        self.showStepsCount(True)
         self.displayGameInfo()
         self.moveOnBoard()
     
@@ -57,6 +65,7 @@ class mainWindow(baseWindow):
             self.thisGame.init()
             self.thisGame.getHaSteps(self.sgfData.haList)
             self.resignAction.setEnabled(False)
+            self.controlDock.controlWidget.resignAction.setEnabled(False)
             self.stepPoint = len(self.sgfData.stepsList)
             self.breakPoint = 0
             self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
@@ -65,6 +74,23 @@ class mainWindow(baseWindow):
             self.showStepsCount()
             self.moveOnBoard()
     
+    def startTestMode(self, variation = []):
+        self.mode = "test"
+        self.modeLabel.setText("Current mode: test")
+        self.breakPoint = self.stepPoint
+        self.stepsListTmp = list(self.sgfData.stepsList)
+        self.sgfData.stepsList = self.sgfData.stepsList[:self.stepPoint] + variation
+        self.stepPoint += len(variation)
+        self.backAction.setEnabled(True)
+        self.controlDock.controlWidget.backButton.setEnabled(True)
+        self.resignAction.setEnabled(False)
+        self.controlDock.controlWidget.resignAction.setEnabled(False)
+        self.moveOnBoard()
+    
+    def restartFreeAndTestMode(self):
+        self.sgfData.stepsList = self.sgfData.stepsList[:self.stepPoint]
+        self.moveOnBoard()
+    
     def toStartAction_(self):
         self.stepPoint = self.breakPoint
         self.showStepsCount()
@@ -72,7 +98,7 @@ class mainWindow(baseWindow):
     
     def fastPrevAction_(self):
         if self.stepPoint - 10 >= self.breakPoint:
-               self.stepPoint -= 10
+            self.stepPoint -= 10
         else:
             self.stepPoint = self.breakPoint
         self.showStepsCount()
@@ -81,14 +107,18 @@ class mainWindow(baseWindow):
     def prevAction_(self):
         if self.stepPoint - 1 >= self.breakPoint:
             self.stepPoint -= 1
-            self.showStepsCount()
-            self.moveOnBoard()
+        else:
+            self.stepPoint = self.breakPoint
+        self.showStepsCount()
+        self.moveOnBoard()
     
     def nextAction_(self):
         if self.stepPoint + 1 <= len(self.sgfData.stepsList):
             self.stepPoint += 1
-            self.showStepsCount()
-            self.moveOnBoard()
+        else:
+            self.stepPoint = len(self.sgfData.stepsList)
+        self.showStepsCount()
+        self.moveOnBoard()
 
     def fastNextAction_(self):
         if self.stepPoint + 10 < len(self.sgfData.stepsList):
@@ -102,6 +132,19 @@ class mainWindow(baseWindow):
         self.stepPoint = len(self.sgfData.stepsList)
         self.showStepsCount()
         self.moveOnBoard()
+    
+    def backAction_(self):
+        self.mode = "review"
+        self.modeLabel.setText("Current mode: Review")
+        self.sgfData.stepsList = self.stepsListTmp
+        self.stepPoint = self.breakPoint
+        self.breakPoint = 0
+        self.controlDock.controlWidget.stepsCount.setMaximum(len(self.sgfData.stepsList))
+        self.controlDock.controlWidget.stepsSlider.setMaximum(len(self.sgfData.stepsList))
+        self.showStepsCount()
+        self.moveOnBoard()
+        self.backAction.setEnabled(False)
+        self.controlDock.controlWidget.backButton.setEnabled(False)
     
     def showStepsCount(self, setMaximum = False):
         if setMaximum:
@@ -132,7 +175,8 @@ class mainWindow(baseWindow):
             self.thisGame.y = y
             moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
         self.board.update()
-        if self.mode == "review":
+        #self.makeSound(moveSuccess, deadChessNum)
+        if self.mode == "review" or self.mode == "test":
             self.thisGame.changeColor()
     
     def fileOpen_(self):
