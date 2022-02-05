@@ -50,7 +50,7 @@ class goBoard(QLabel):
     startPaint = pyqtSignal()
     endPaint = pyqtSignal()
     
-    def __init__(self, parent = None, size = 19, stylePath = "./res/style2.png"):
+    def __init__(self, parent = None, size = 19, stylePath = "./res/pictures/style2.png"):
         super().__init__()
         self.parent = parent
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -149,9 +149,9 @@ class goBoard(QLabel):
         if self.x != None and self.y != None and self.parent.thisGame.stepsGoDict != {}:
             for x, y in list(self.parent.thisGame.stepsGoDict.keys()):
                 if self.parent.thisGame.stepsGoDict[(x, y)][0] == "black":
-                    pix = QPixmap("res/blackStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
+                    pix = QPixmap("res/pictures/blackStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
                 else:
-                    pix = QPixmap("res/whiteStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
+                    pix = QPixmap("res/pictures/whiteStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
                 (x2, y2) = self.goToBoard((x, y))
                 p.drawPixmap(x2 - self.stonesize // 2, y2 - self.stonesize // 2, pix)
             

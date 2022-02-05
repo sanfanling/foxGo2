@@ -198,7 +198,7 @@ class infoDisplay(QWidget):
         self.blackPlayer.setAlignment(Qt.AlignCenter)
         self.blackPhoto = QLabel()
         self.blackPhoto.setAlignment(Qt.AlignCenter)
-        pix = QPixmap("res/blank.png").scaled(100, 100, 0, 1)
+        pix = QPixmap("res/pictures/blank.png").scaled(100, 100, 0, 1)
         self.blackPhoto.setPixmap(pix)
         blackLayout.addWidget(self.blackLabel)
         blackLayout.addWidget(self.blackPlayer)

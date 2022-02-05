@@ -17,7 +17,7 @@ class baseWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("foxGo2")
-        self.setWindowIcon(QIcon("res/logo.png"))
+        self.setWindowIcon(QIcon("res/pictures/logo.png"))
         self.boardSize = 19
         self.initDockwidget()
         self.initCentralWidget()
