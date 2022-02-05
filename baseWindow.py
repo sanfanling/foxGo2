@@ -16,7 +16,7 @@ class baseWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("foxGo-II")
+        self.setWindowTitle("foxGo2")
         self.setWindowIcon(QIcon("res/logo.png"))
         self.boardSize = 19
         self.initDockwidget()
@@ -29,6 +29,8 @@ class baseWindow(QMainWindow):
         
         self.board.startPaint.connect(self.removeFromLayout)
         self.board.endPaint.connect(self.addToLayout)
+        self.aboutQt.triggered.connect(self.aboutQt_)
+        self.aboutApp.triggered.connect(self.aboutApp_)
     
     def removeFromLayout(self):
         self.mainLayout.removeWidget(self.board)
@@ -129,11 +131,11 @@ class baseWindow(QMainWindow):
         viewMenu.addAction(self.commentsDock.toggleViewAction())
         
         settingMenu = self.menuBar().addMenu("Settings(&S)")
-        self.settingAction = QAction("Configrate foxGo-II...")
+        self.settingAction = QAction("Configrate foxGo2...")
         settingMenu.addAction(self.settingAction)
         
         helpMenu = self.menuBar().addMenu("Help(&H)")
-        self.aboutApp = QAction("About foxGo-II...")
+        self.aboutApp = QAction("About foxGo2...")
         self.aboutQt = QAction("About Qt...")
         helpMenu.addAction(self.aboutApp)
         helpMenu.addAction(self.aboutQt)
@@ -173,6 +175,12 @@ class baseWindow(QMainWindow):
         self.modeLabel = QLabel()
         #self.modeLabel.setAlignment(Qt.AlignLeft)
         self.statusBar().addWidget(self.modeLabel)
+    
+    def aboutQt_(self):
+        QMessageBox.aboutQt(self, "About Qt")
+    
+    def aboutApp_(self):
+        QMessageBox.about(self, "About foxGo2", "2nd generation of foxGo, with new interface and experience. Enjoy go's magic with foxGo2!")
 
 
 if __name__ == "__main__":
