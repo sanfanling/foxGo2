@@ -20,6 +20,7 @@ class mainWindow(baseWindow):
         
         self.newGame.triggered.connect(self.startFreeMode)
         self.fileOpen.triggered.connect(self.fileOpen_)
+        self.quit.triggered.connect(self.close)
         
         self.toStartAction.triggered.connect(self.toStartAction_)
         self.controlDock.controlWidget.toStartButton.clicked.connect(self.toStartAction_)
@@ -189,6 +190,10 @@ class mainWindow(baseWindow):
         if fileName:
             with open(fileName) as f:
                 self.startReviewMode(f.read())
+    
+    def closeEvent(self, e):
+        os.remove(os.path.expanduser("~/.foxGo2/lock"))
+        e.accept()
 
 
 
