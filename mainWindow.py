@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSoundEffect, QSound
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfData import sgfData
 from settingData import settingData
@@ -49,6 +50,8 @@ class mainWindow(baseWindow):
         self.boardStyle1.triggered.connect(self.changeBoardStyle_)
         self.boardStyle2.triggered.connect(self.changeBoardStyle_)
         self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
+        self.printGo.triggered.connect(self.printGo_)
+        self.printGoPreview.triggered.connect(self.printGoPreview_)
         self.quit.triggered.connect(self.close)
         
         
@@ -204,6 +207,8 @@ class mainWindow(baseWindow):
         self.thisGame.stepsGoDict.clear()
         self.thisGame.stepsGoDict.update(self.thisGame.haDict)
         tmpList = self.sgfData.stepsList[:self.stepPoint]
+        moveSuccess = 0
+        deadChessNum = 0
         for i, c, x, y in tmpList:
             self.thisGame.stepNum = i
             self.thisGame.goColor = c
@@ -212,7 +217,7 @@ class mainWindow(baseWindow):
             moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
             self.thisGame.changeColor()
         self.board.update()
-        self.makeSound(1, 0)
+        self.makeSound(moveSuccess, deadChessNum)
     
     def makeSound(self, moveSuccess, deadChessNum):
         if not self.settingData.effectSounds or moveSuccess == 0:
@@ -258,6 +263,27 @@ class mainWindow(baseWindow):
         style = self.sender().text().lower()
         self.settingData.boardStyle = style
         self.board.setBoardStyle(style)
+    
+    def printGo_(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_() == QDialog.Accepted:
+            self.handlePaintRequest(printer)
+    
+    def printGoPreview_(self):
+        dialog = QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.handlePaintRequest)
+        dialog.exec_()
+    
+    def handlePaintRequest(self, printer):
+        painter = QPainter(printer)
+        rect = painter.viewport()
+        pix = self.board.grab(self.board.rect())
+        size = pix.size()
+        size.scale(rect.size(), Qt.KeepAspectRatio)
+        painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
+        painter.setWindow(pix.rect())
+        painter.drawPixmap(0, 0, pix)
     
     def closeEvent(self, e):
         os.remove(os.path.expanduser("~/.foxGo2/lock"))

@@ -31,6 +31,8 @@ class baseWindow(QMainWindow):
         self.board.endPaint.connect(self.addToLayout)
         self.aboutQt.triggered.connect(self.aboutQt_)
         self.aboutApp.triggered.connect(self.aboutApp_)
+        self.printGo.triggered.connect(self.printGo_)
+        self.printGoPreview.triggered.connect(self.printGoPreview_)
     
     def removeFromLayout(self):
         self.mainLayout.removeWidget(self.board)
@@ -58,7 +60,7 @@ class baseWindow(QMainWindow):
         gameMenu.addAction(self.fileOpen)
         gameMenu.addSeparator()
         self.printGo = QAction("Print...")
-        self.printGoPreview = QAction("Preview...")
+        self.printGoPreview = QAction("Print preview...")
         gameMenu.addAction(self.printGo)
         gameMenu.addAction(self.printGoPreview)
         gameMenu.addSeparator()
@@ -187,6 +189,27 @@ class baseWindow(QMainWindow):
         self.modeLabel = QLabel()
         #self.modeLabel.setAlignment(Qt.AlignLeft)
         self.statusBar().addWidget(self.modeLabel)
+    
+    def printGo_(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_() == QDialog.Accepted:
+            self.handlePaintRequest(printer)
+    
+    def printGoPreview_(self):
+        dialog = QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.handlePaintRequest)
+        dialog.exec_()
+    
+    def handlePaintRequest(self, printer):
+        painter = QPainter(printer)
+        rect = painter.viewport()
+        pix = self.board.grab(self.board.rect())
+        size = pix.size()
+        size.scale(rect.size(), Qt.KeepAspectRatio)
+        painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
+        painter.setWindow(pix.rect())
+        painter.drawPixmap(0, 0, pix)
     
     def aboutQt_(self):
         QMessageBox.aboutQt(self, "About Qt")
