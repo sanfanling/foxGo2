@@ -52,7 +52,7 @@ class go:
                 print("has liberty, legal move!")
                 self.stepSuccess()
                 self.endStepSuccess()
-                self.changeColor()
+                #self.changeColor()
                 return (1, 0)
             elif haveBreath and deadListLen != 0:
                 print("has liberty, legal move, take!")
@@ -60,7 +60,7 @@ class go:
                 self.stepSuccess()
                 chess = self.eatChess(deadList)
                 self.endStepSuccess()
-                self.changeColor()
+                #self.changeColor()
                 return (2, chess)
             elif not haveBreath and deadListLen == 0:
                 print("no libery, no take, illegal move!")
@@ -72,7 +72,7 @@ class go:
                     self.stepSuccess()
                     chess = self.eatChess(deadList)
                     self.endStepSuccess()
-                    self.changeColor()
+                    #self.changeColor()
                     return (2, chess)
                 else:
                     print("it's a ko, illegal move!")   
