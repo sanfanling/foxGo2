@@ -20,9 +20,9 @@ class settingData:
         self.cf = ConfigParser()
         self.cf.read(self.fileName)
         self.sgfPath = self.cf.get("general", "sgfpath")
-        self.music = self.cf.getboolean("general", "music")
+        self.backgroundMusic = self.cf.getboolean("general", "backgroundmusic")
         self.musicPath = self.cf.get("general", "musicpath")
-        self.soundEffect = self.cf.getboolean("general", "soundeffect")
+        self.effectSounds = self.cf.getboolean("general", "effectsounds")
         self.withCoordinate = self.cf.getboolean("board", "withcoordinate")
         self.stepsNumber = self.cf.get("board", "stepsnumber")
         self.boardStylePath = self.cf.get("board", "boardstylepath")
@@ -39,9 +39,9 @@ class settingData:
         
         [general]
         sgfpath = ~/.foxGo2/sgf
-        music = False
-        musicpath = res/sounds/gsls.wma
-        soundeffect = False
+        backgroundmusic = False
+        musicpath = res/sounds/gsls.wav
+        effectsounds = False
         
         [board]
         withcoordinate = True

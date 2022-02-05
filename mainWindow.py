@@ -5,8 +5,10 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtMultimedia import QSoundEffect, QSound
 from baseWindow import baseWindow
 from sgfData import sgfData
+from settingData import settingData
 import sys, os
 
 class mainWindow(baseWindow):
@@ -14,13 +16,31 @@ class mainWindow(baseWindow):
     def __init__(self):
         super().__init__()
         
+        
+        self.settingData = settingData()
+        self.settingData.getSettingData()
+        self.withCoordinate.setChecked(self.settingData.withCoordinate)
+        self.hideCursor.setChecked(self.settingData.hideCursor)
+        self.backgroundMusic.setChecked(self.settingData.backgroundMusic)
+        self.musicEquipment = QSound(self.settingData.musicPath)
+        self.musicEquipment.setLoops(99)
+        if self.settingData.backgroundMusic:
+            self.musicEquipment.play()
+        self.effectSounds.setChecked(self.settingData.effectSounds)
+        self.effectEquipment = QSoundEffect()
+        
         self.sgfData = sgfData()
         self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
         self.startFreeMode()
         
         self.newGame.triggered.connect(self.startFreeMode)
         self.fileOpen.triggered.connect(self.fileOpen_)
+        self.withCoordinate.toggled.connect(self.withCoordinate_)
+        self.hideCursor.toggled.connect(self.hideCursor_)
+        self.backgroundMusic.toggled.connect(self.backgroundMusic_)
+        self.effectSounds.toggled.connect(self.effectSounds_)
         self.quit.triggered.connect(self.close)
+        
         
         self.toStartAction.triggered.connect(self.toStartAction_)
         self.controlDock.controlWidget.toStartButton.clicked.connect(self.toStartAction_)
@@ -182,7 +202,23 @@ class mainWindow(baseWindow):
             moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
             self.thisGame.changeColor()
         self.board.update()
-        #self.makeSound(moveSuccess, deadChessNum)
+        self.makeSound(1, 0)
+    
+    def makeSound(self, moveSuccess, deadChessNum):
+        if not self.settingData.effectSounds or moveSuccess == 0:
+            return
+        else:
+            if moveSuccess == 1:
+                soundFile = "res/sounds/112.wav"
+            elif moveSuccess == 2:
+                if deadChessNum == 1:
+                    soundFile = "res/sounds/105.wav"
+                elif 2 <= deadChessNum < 10:
+                    soundFile = "res/sounds/104.wav"
+                else:
+                    soundFile = "res/sounds/103.wav"
+        self.effectEquipment.setSource(QUrl.fromLocalFile(soundFile))
+        self.effectEquipment.play()
         
     
     def fileOpen_(self):
@@ -190,6 +226,23 @@ class mainWindow(baseWindow):
         if fileName:
             with open(fileName) as f:
                 self.startReviewMode(f.read())
+    
+    def withCoordinate_(self, b):
+        self.settingData.withCoordinate = b
+        self.board.update()
+    
+    def hideCursor_(self, b):
+        self.settingData.hideCursor = b
+    
+    def backgroundMusic_(self, b):
+        self.settingData.backgroundMusic = b
+        if b:
+            self.musicEquipment.play()
+        else:
+            self.musicEquipment.stop()
+    
+    def effectSounds_(self, b):
+        self.settingData.effectSounds = b
     
     def closeEvent(self, e):
         os.remove(os.path.expanduser("~/.foxGo2/lock"))

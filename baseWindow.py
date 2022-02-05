@@ -123,6 +123,14 @@ class baseWindow(QMainWindow):
         boardStyleMenu.addAction(self.boardStyle1)
         boardStyleMenu.addAction(self.boardStyle2)
         
+        soundMenu = self.menuBar().addMenu("Sound(&D)")
+        self.backgroundMusic = QAction("Background music")
+        self.backgroundMusic.setCheckable(True)
+        self.effectSounds = QAction("Effect sounds")
+        self.effectSounds.setCheckable(True)
+        soundMenu.addAction(self.backgroundMusic)
+        soundMenu.addAction(self.effectSounds)
+        
         viewMenu = self.menuBar().addMenu("View(&V)")
         viewMenu.addAction(self.controlDock.toggleViewAction())
         viewMenu.addAction(self.stepsTreeDock.toggleViewAction())

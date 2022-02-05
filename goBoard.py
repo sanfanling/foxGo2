@@ -60,7 +60,6 @@ class goBoard(QLabel):
         self.thinLine = 1
         self.thickLine = 3
         self.dotRadius = 3
-        self.withCoordinate = True
         self.x = None
         self.y = None
         self.inBoard = False
@@ -85,11 +84,12 @@ class goBoard(QLabel):
         self.y = e.y()
         if self.boardEdge <= self.x <= self.boardEdge + self.cellSize * (self.boardSize - 1) and self.boardEdge <= self.y <= self.boardEdge + self.cellSize * (self.boardSize - 1):
             self.inBoard = True
-            #self.setCursor(QCursor(Qt.BlankCursor))
+            if self.parent.settingData.hideCursor:
+                self.setCursor(QCursor(Qt.BlankCursor))
             self.update()
         else:
             self.inBoard = False
-            #self.setCursor(QCursor(Qt.ArrowCursor))
+            self.setCursor(QCursor(Qt.ArrowCursor))
             self.update()
     
     def mousePressEvent(self, e):
@@ -106,7 +106,7 @@ class goBoard(QLabel):
                 self.parent.stepPoint += 1
                 self.parent.showStepsCount(True)
                 self.update()
-                #self.parent.makeSound(moveSuccess, deadChessNum)
+                self.parent.makeSound(moveSuccess, deadChessNum)
         elif e.button() == Qt.LeftButton and self.parent.mode == "review" and self.inBoard and not hasStone:
             self.parent.startTestMode()
             self.parent.thisGame.stepNum = 0
@@ -118,7 +118,7 @@ class goBoard(QLabel):
                 self.parent.stepPoint += 1
                 self.parent.showStepsCount(True)
                 self.update()
-                #self.parent.makeSound(moveSuccess, deadChessNum)
+                self.parent.makeSound(moveSuccess, deadChessNum)
         elif e.button() == Qt.LeftButton and self.parent.mode == "test" and self.inBoard and not hasStone:
             if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
                 self.parent.restartFreeAndTestMode()
@@ -130,7 +130,7 @@ class goBoard(QLabel):
                 self.parent.stepPoint += 1
                 self.parent.showStepsCount(True)
                 self.update()
-                #self.parent.makeSound(moveSuccess, deadChessNum)
+                self.parent.makeSound(moveSuccess, deadChessNum)
         if e.button() == Qt.RightButton and self.inBoard:
             self.parent.thisGame.makeStepPass()
     
@@ -170,9 +170,9 @@ class goBoard(QLabel):
             p.setPen(QPen(Qt.black, lineThickness))
             p.drawLine(self.boardEdge, self.boardEdge + self.cellSize * i, self.boardEdge + self.cellSize * (self.boardSize - 1), self.boardEdge + self.cellSize * i,)
             p.drawLine(self.boardEdge + self.cellSize * i, self.boardEdge, self.boardEdge + self.cellSize * i, self.boardEdge + self.cellSize * (self.boardSize - 1))
-            if self.withCoordinate:
-                p.drawText(self.boardEdge - 25, self.boardEdge + self.cellSize * i + self.fontInfo.boundingRect(str(i + 1)).height()//3, str(i + 1))
-                p.drawText(self.boardEdge + self.cellSize * i - self.fontInfo.boundingRect(chr(i + 65)).width()//2, self.boardEdge - 15, chr(i + 65))
+            if self.parent.settingData.withCoordinate:
+                p.drawText(self.boardEdge - 23, self.boardEdge + self.cellSize * i + self.fontInfo.boundingRect(str(i + 1)).height()//3, str(i + 1))
+                p.drawText(self.boardEdge + self.cellSize * i - self.fontInfo.boundingRect(chr(i + 65)).width()//2, self.boardEdge - 13, chr(i + 65))
         if self.boardSize == 19:
             dotPosition = ((4, 4), (4, 10), (4, 16), (10, 4), (10, 10), (10, 16), (16, 4), (16, 10), (16, 16))
         elif self.boardSize == 9:
