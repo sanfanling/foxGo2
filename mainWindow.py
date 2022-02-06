@@ -36,6 +36,12 @@ class mainWindow(baseWindow):
         else:
             self.boardNoStyle.setChecked(True)
         self.board.setBoardStyle(self.settingData.boardStyle)
+        if self.settingData.stepsNumber == "current":
+            self.stepsNumberCurrent.setChecked(True)
+        elif self.settingData.stepsNumber == "all":
+            self.stepsNumberAll.setChecked(True)
+        else:
+            self.stepsNumberHide.setChecked(True)
         
         self.sgfData = sgfData()
         self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
@@ -50,6 +56,9 @@ class mainWindow(baseWindow):
         self.boardStyle1.triggered.connect(self.changeBoardStyle_)
         self.boardStyle2.triggered.connect(self.changeBoardStyle_)
         self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
+        self.stepsNumberAll.triggered.connect(self.changeStepsNumber_)
+        self.stepsNumberCurrent.triggered.connect(self.changeStepsNumber_)
+        self.stepsNumberHide.triggered.connect(self.changeStepsNumber_)
         self.quit.triggered.connect(self.close)
         
         
@@ -259,8 +268,15 @@ class mainWindow(baseWindow):
     
     def changeBoardStyle_(self):
         style = self.sender().text().lower()
-        self.settingData.boardStyle = style
-        self.board.setBoardStyle(style)
+        if self.settingData.boardStyle != style:
+            self.settingData.boardStyle = style
+            self.board.setBoardStyle(style)
+    
+    def changeStepsNumber_(self):
+        text = self.sender().text().lower()
+        if self.settingData != text:
+            self.settingData.stepsNumber = text
+            self.board.update()
     
     def closeEvent(self, e):
         #os.remove(os.path.expanduser("~/.foxGo2/lock"))
