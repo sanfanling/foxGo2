@@ -6,15 +6,19 @@
 
 
 from configparser import ConfigParser
-import os.path
+import os.path, pickle
 
 
 class settingData:
     
     def __init__(self):
         self.fileName = os.path.expanduser("~/.foxGo2/foxGo2.conf")
+        self.windowStateFileName = os.path.expanduser("~/.foxGo2/windowstate")
         if not os.path.exists(self.fileName):
             self.initConfigfile()
+        if not os.path.exists(self.windowStateFileName):
+            f = open(self.windowStateFileName, "wb")
+            f.close()
     
     def getSettingData(self):
         self.cf = ConfigParser()
@@ -27,7 +31,9 @@ class settingData:
         self.stepsNumber = self.cf.get("board", "stepsnumber")
         self.boardStyle = self.cf.get("board", "boardstyle")
         self.hideCursor = self.cf.getboolean("board", "hidecursor")
-        self.windowState = self.cf.get("session", "windowstate")
+        #self.windowState = self.cf.get("session", "windowstate")
+        with open(self.windowStateFileName, "rb") as f:
+            self.windowState = f.read()
     
     def setSettingData(self):
         self.cf.set("general", "sgfpath", str(self.sgfPath))
@@ -38,11 +44,13 @@ class settingData:
         self.cf.set("board", "stepsnumber", str(self.stepsNumber))
         self.cf.set("board", "boardstyle", str(self.boardStyle))
         self.cf.set("board", "hidecursor", str(self.hideCursor))
-        self.cf.set("session", "windowstate", str(self.windowState))
     
     def writeToFile(self):
         with open(self.fileName, "w") as f:
             self.cf.write(f)
+        
+        with open(self.windowStateFileName, "wb") as ff:
+            ff.write(self.windowState)
         
     
     def initConfigfile(self):
@@ -64,10 +72,6 @@ class settingData:
         stepsnumber = hide
         boardstyle = style2
         hidecursor = False
-        
-        [session]
-        windowstate = 
-        
         """
         
         with open(self.fileName, "w") as f:

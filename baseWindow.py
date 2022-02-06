@@ -166,18 +166,23 @@ class baseWindow(QMainWindow):
     
     def initDockwidget(self):
         self.stepsTreeDock = stepsTreeDock("Steps tree", self)
+        self.stepsTreeDock.setObjectName("Steps tree")
         self.addDockWidget(Qt.LeftDockWidgetArea, self.stepsTreeDock)
         
         self.recentGamesDock = recentGamesDock("Recent games", self)
+        self.recentGamesDock.setObjectName("Recent games")
         self.addDockWidget(Qt.LeftDockWidgetArea, self.recentGamesDock)
         
         self.infoDock = infoDock("Information", self)
+        self.infoDock.setObjectName("Information")
         self.addDockWidget(Qt.RightDockWidgetArea, self.infoDock)
         
         self.commentsDock = QDockWidget("Comments", self)
+        self.commentsDock.setObjectName("Comments")
         self.addDockWidget(Qt.RightDockWidgetArea, self.commentsDock)
         
         self.controlDock = controlDock("Control", self)
+        self.controlDock.setObjectName("Control")
         self.addDockWidget(Qt.BottomDockWidgetArea, self.controlDock)
         
         self.setCorner(Qt.BottomLeftCorner, Qt.LeftDockWidgetArea)
