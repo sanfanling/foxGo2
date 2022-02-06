@@ -19,7 +19,7 @@ class go:
     
     def getHaSteps(self, haList):
         for i in haList:
-            self.haDict[i] = ("black", "")
+            self.haDict[i] = ("black", 0)
         
     
     def makeStepSafe(self):
