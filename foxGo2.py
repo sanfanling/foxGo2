@@ -23,8 +23,8 @@ if __name__ == "__main__":
         QMessageBox.information(None, "Notice", "Only one foxGo2 instance allowed running at once!")
         sys.exit()
     else:
-        f = open(lockFile, 'w')
-        f.close()
+        #f = open(lockFile, 'w')
+        #f.close()
         w = mainWindow()
         w.show()
         sys.exit(app.exec_())

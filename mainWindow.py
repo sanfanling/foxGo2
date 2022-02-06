@@ -50,8 +50,6 @@ class mainWindow(baseWindow):
         self.boardStyle1.triggered.connect(self.changeBoardStyle_)
         self.boardStyle2.triggered.connect(self.changeBoardStyle_)
         self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
-        self.printGo.triggered.connect(self.printGo_)
-        self.printGoPreview.triggered.connect(self.printGoPreview_)
         self.quit.triggered.connect(self.close)
         
         
@@ -264,29 +262,8 @@ class mainWindow(baseWindow):
         self.settingData.boardStyle = style
         self.board.setBoardStyle(style)
     
-    def printGo_(self):
-        printer = QPrinter()
-        printDialog = QPrintDialog(printer, self)
-        if printDialog.exec_() == QDialog.Accepted:
-            self.handlePaintRequest(printer)
-    
-    def printGoPreview_(self):
-        dialog = QPrintPreviewDialog()
-        dialog.paintRequested.connect(self.handlePaintRequest)
-        dialog.exec_()
-    
-    def handlePaintRequest(self, printer):
-        painter = QPainter(printer)
-        rect = painter.viewport()
-        pix = self.board.grab(self.board.rect())
-        size = pix.size()
-        size.scale(rect.size(), Qt.KeepAspectRatio)
-        painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
-        painter.setWindow(pix.rect())
-        painter.drawPixmap(0, 0, pix)
-    
     def closeEvent(self, e):
-        os.remove(os.path.expanduser("~/.foxGo2/lock"))
+        #os.remove(os.path.expanduser("~/.foxGo2/lock"))
         self.settingData.setSettingData()
         self.settingData.writeToFile()
         e.accept()
