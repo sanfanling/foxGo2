@@ -143,28 +143,48 @@ class goBoard(QLabel):
         p.begin(self)
         self.__paintBoard(p)
         self.__paintMousePointRect(p)
-        self.__paintSuccessMove(p)
+        self.__paintSuccessedMoves(p)
         p.end()
         self.endPaint.emit()
         #self.adjustSize()
     
-    def __paintSuccessMove(self, p):
+    def __paintSuccessedMoves(self, p):
         if self.x != None and self.y != None and self.parent.thisGame.stepsGoDict != {}:
             for x, y in list(self.parent.thisGame.stepsGoDict.keys()):
                 if self.parent.thisGame.stepsGoDict[(x, y)][0] == "black":
                     pix = QPixmap("res/pictures/blackStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
+                    fontColor = Qt.white
                 else:
                     pix = QPixmap("res/pictures/whiteStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
-                (x2, y2) = self.goToBoard((x, y))
-                p.drawPixmap(x2 - self.stonesize // 2, y2 - self.stonesize // 2, pix)
+                    fontColor = Qt.black
+                (x1, y1) = self.goToBoard((x, y))
+                p.drawPixmap(x1 - self.stonesize // 2, y1 - self.stonesize // 2, pix)
             
-            p.setPen(QPen(Qt.blue, 1))
-            p.setBrush(QBrush(Qt.blue))
-            triangle = QPainterPath()
-            triangle.moveTo(x2, y2)
-            triangle.lineTo(x2, y2 + self.stonesize // 2)
-            triangle.lineTo(x2 + self.stonesize // 2, y2)
-            p.drawPath(triangle)
+                if self.parent.settingData.stepsNumber == "all":
+                    count = self.parent.thisGame.stepsGoDict[(x, y)][1]
+                    if count != 0 and self.checkClearCount((x, y)):
+                        p.setPen(QPen(fontColor, 1))
+                        font = p.font()
+                        font.setPointSize(self.stonesize // 3)
+                        p.setFont(font)
+                        rect = QRect(x1 - self.stonesize // 2, y1 - self.stonesize // 2, self.stonesize // 2 * 2, self.stonesize // 2 * 2)
+                        p.drawText(rect, Qt.AlignCenter, str(count))
+            
+            if self.parent.settingData.stepsNumber == "hide":
+                p.setPen(QPen(fontColor, 1))
+                p.setBrush(QBrush(fontColor))
+                triangle = QPainterPath()
+                triangle.moveTo(x1, y1)
+                triangle.lineTo(x1, y1 + self.stonesize // 2)
+                triangle.lineTo(x1 + self.stonesize // 2, y1)
+                p.drawPath(triangle)
+            elif self.parent.settingData.stepsNumber == "current":
+                p.setPen(QPen(fontColor, 1))
+                font = p.font()
+                font.setPointSize(self.stonesize // 3)
+                p.setFont(font)
+                rect = QRect(x1 - self.stonesize // 2, y1 - self.stonesize // 2, self.stonesize // 2 * 2, self.stonesize // 2 * 2)
+                p.drawText(rect, Qt.AlignCenter, str(self.parent.thisGame.stepsGoDict[(x, y)][1]))
             
     
     def __paintBoard(self, p):
@@ -211,6 +231,16 @@ class goBoard(QLabel):
         x1 = round((x - self.boardEdge) / self.cellSize + 1)
         y1 = round((y - self.boardEdge) / self.cellSize + 1)
         return (x1, y1)
+    
+    def checkClearCount(self, currentKey):
+        keyList = list(self.parent.thisGame.stepsGoDict.keys())
+        valueList = list(map(lambda x: x[1], list(self.parent.thisGame.stepsGoDict.values())))
+        ind = keyList.index(currentKey)
+        count = valueList[ind]
+        for i in valueList[ind+1:]:
+            if count >= i:
+                return False
+        return True
     
     def minimumSizeHint(self):
         s = 25 * (self.boardSize + 1)
