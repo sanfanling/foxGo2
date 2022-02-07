@@ -274,9 +274,9 @@ class infoDisplay(QWidget):
         
 class commentsDock(QDockWidget):
     
-    def __init__(self, title):
+    def __init__(self, title, parent):
         super().__init__(title)
-        
+        self.parent = parent
         self.commentsDisplay = QTextBrowser()
         self.setWidget(self.commentsDisplay)
         self.setFloating(False)

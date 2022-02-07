@@ -24,6 +24,7 @@ class sgfData:
         self.rule = self.head["RU"][0]
         self.ha = self.head["HA"][0]
         self.timeLimit = self.head["TM"][0]
+        self.stepsList, self.haList = self.getStepsData(self.rest)
         
     def init(self):
         self.stepsList = []
@@ -41,10 +42,12 @@ class sgfData:
         self.timeLimit = "-"
     
     def getStepsData(self, iterator):
+        stepsList = []
+        haList = []
         j = 0
         for i in iterator:
             if "AB" in i.properties:
-                self.haList = self.getHaData(i.properties["AB"])
+                haList = self.getHaData(i.properties["AB"])
                 continue
             
             j += 1
@@ -58,7 +61,8 @@ class sgfData:
                 yname = i.properties["W"][0][1]
             x = ord(xname)-96
             y = ord(yname)-96
-            self.stepsList.append((j, goColor, x, y))
+            stepsList.append((j, goColor, x, y))
+        return stepsList, haList
     
     def getHaData(self, hal):
         dl = []
@@ -118,8 +122,10 @@ class sgfData:
 
 
 if __name__ == "__main__":
-    a = sgfData("11.sgf")
-    print(a.getKomi())
-    print(a.getBlackPlayer())
-    print(a.getCommentsData())
+    with open("2.sgf", "r") as f:
+        d = f.read()
+    a = sgfData()
+    a.parse(d)
+    print(a.getCommentsData(a.rest))
+    print(a.getVariations())
     

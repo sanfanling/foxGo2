@@ -8,7 +8,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSoundEffect, QSound
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
-from sgfData import sgfData
+from sgfDataNew import sgfDataNew as sgfData
 from settingData import settingData
 import sys, os
 
@@ -96,26 +96,30 @@ class mainWindow(baseWindow):
     
     def startReviewMode(self, sgf):
         self.sgfData.init()
-        try:
-            self.sgfData.parse(sgf)
-        except:
-            QMessageBox.critical(self, "Sfg file parse error", "It may be caused because of broken sfg file!")
-            return
+        #try:
+        gameList = self.sgfData.checkSgf(sgf)
+        if len(gameList) != 1:
+            pass
         else:
-            self.mode = "review"
-            self.modeLabel.setText("Current mode: review")
-            self.sgfData.getStepsData(self.sgfData.rest) # now self.sgfData.stepsList and self.sgfData.haList are available
-            self.thisGame.init()
-            self.thisGame.getHaSteps(self.sgfData.haList)
-            self.resignAction.setEnabled(False)
-            self.controlDock.controlWidget.resignAction.setEnabled(False)
-            self.stepPoint = len(self.sgfData.stepsList)
-            self.breakPoint = 0
-            self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
-            self.controlDock.controlWidget.stepsSlider.setRange(0, self.stepPoint)
-            self.displayGameInfo()
-            self.showStepsCount()
-            self.moveOnBoard()
+            self.sgfData.parseGame(0)
+        
+        #except:
+            #QMessageBox.critical(self, "Sfg file parse error", "It may be caused because of broken sfg file!")
+            #return
+        #else:
+        self.mode = "review"
+        self.modeLabel.setText("Current mode: review")
+        self.thisGame.init()
+        self.thisGame.getHaSteps(self.sgfData.haList)
+        self.resignAction.setEnabled(False)
+        self.controlDock.controlWidget.resignAction.setEnabled(False)
+        self.stepPoint = len(self.sgfData.stepsList)
+        self.breakPoint = 0
+        self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
+        self.controlDock.controlWidget.stepsSlider.setRange(0, self.stepPoint)
+        self.displayGameInfo()
+        self.showStepsCount()
+        self.moveOnBoard()
     
     def startTestMode(self, variation = []):
         self.mode = "test"
@@ -227,6 +231,18 @@ class mainWindow(baseWindow):
             self.thisGame.changeColor()
         self.board.update()
         self.makeSound(moveSuccess, deadChessNum)
+        
+        if self.mode == "review":
+            com = self.sgfData.stepsMap[self.stepPoint - 1].comment
+            if com != None:
+                self.commentsDock.commentsDisplay.setPlainText(com)
+            else:
+                self.commentsDock.commentsDisplay.clear()
+            
+            #var = self.sgfData.stepsMap[self.stepPoint - 1].variations
+            #if var != []:
+                #self.commentBox.moveCursor(QTextCursor.End)
+                #self.commentBox.insertHtml(self.formatVariation())
     
     def makeSound(self, moveSuccess, deadChessNum):
         if not self.settingData.effectSounds or moveSuccess == 0:

@@ -177,7 +177,7 @@ class baseWindow(QMainWindow):
         self.infoDock.setObjectName("Information")
         self.addDockWidget(Qt.RightDockWidgetArea, self.infoDock)
         
-        self.commentsDock = QDockWidget("Comments", self)
+        self.commentsDock = commentsDock("Comments", self)
         self.commentsDock.setObjectName("Comments")
         self.addDockWidget(Qt.RightDockWidgetArea, self.commentsDock)
         
