@@ -84,6 +84,7 @@ class sgfExplorerDisplay(QWidget):
     def __init__(self, parent = None):
         super().__init__()
         self.parent = parent
+        self.sgfPath = self.parent.settingData.sgfPath
         mainLayout = QVBoxLayout(None)
         
         searchLayout = QHBoxLayout(None)
@@ -100,14 +101,20 @@ class sgfExplorerDisplay(QWidget):
         self.showItems()
         
         self.filterLine.textChanged.connect(self.showItems)
+        self.explorer.itemDoubleClicked.connect(self.showSelectedSgfFile)
+        
     
     def showItems(self, t = ""):
         self.explorer.clear()
-        sgfPath = self.parent.settingData.sgfPath
-        for i in glob.glob(os.path.join(sgfPath, "*.sgf")):
+        for i in glob.glob(os.path.join(self.sgfPath, "*.sgf")):
             baseName, fileName = os.path.split(i)
             if t in fileName:
                 self.explorer.addTopLevelItem(QTreeWidgetItem([fileName]))
+    
+    def showSelectedSgfFile(self, w):
+        with open(os.path.join(self.sgfPath, w.text(0))) as f:
+            sgf = f.read()
+        self.parent.startReviewMode(sgf)
 
 
 class recentGamesDock(QDockWidget):
