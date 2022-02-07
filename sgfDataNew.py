@@ -106,7 +106,6 @@ class sgfDataNew:
     
     def recursionNode(self, node, var):
         var.append(node)
-        #var.append([k, self.getColor, self.getx, self.gety])
         node = node.next
         if node == None:
             return var

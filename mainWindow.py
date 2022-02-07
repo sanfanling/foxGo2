@@ -185,6 +185,7 @@ class mainWindow(baseWindow):
     
     def backAction_(self):
         self.mode = "review"
+        self.commentsDock.commentsDisplay.clear()
         self.modeLabel.setText("Current mode: Review")
         self.sgfData.stepsList = self.stepsListTmp
         self.stepPoint = self.breakPoint
@@ -230,17 +231,39 @@ class mainWindow(baseWindow):
         self.board.update()
         self.makeSound(moveSuccess, deadChessNum)
         
-        if self.mode == "review":
+        self.commentsDock.commentsDisplay.clear()
+        if self.mode == "review" and self.stepPoint != 0:
             com = self.sgfData.stepsMap[self.stepPoint - 1].comment
             if com != None:
                 self.commentsDock.commentsDisplay.setPlainText(com)
-            else:
-                self.commentsDock.commentsDisplay.clear()
+                
             
-            #var = self.sgfData.stepsMap[self.stepPoint - 1].variations
-            #if var != []:
-                #self.commentBox.moveCursor(QTextCursor.End)
-                #self.commentBox.insertHtml(self.formatVariation())
+            var = self.sgfData.stepsMap[self.stepPoint - 1].variations
+            if var != []:
+                self.commentsDock.commentsDisplay.moveCursor(QTextCursor.End)
+                self.commentsDock.commentsDisplay.insertHtml(self.formatVariation())
+    
+    def showVariation(self, link):
+        self.commentsDock.commentsDisplay.clear()
+        name = link.fileName().strip()
+        point, num = name.split("-")
+        point = int(point)
+        num = int(num)
+        l = self.sgfData.stepsMap[point - 1].variations[num - 1]
+        vl = self.sgfData.parseStepsMap(l)
+        self.startTestMode(vl)
+        self.showStepsCount(True)
+    
+    def formatVariation(self):
+        p = 0
+        text = "<br><br>"
+        for i in self.sgfData.stepsMap[self.stepPoint - 1].variations:
+            p += 1
+            co = i[0].comment
+            url = "{}-{}".format(self.stepPoint, p)
+            title = "Variation: {}: ".format(url)
+            text += '<a href="{}">{}</a> {}<br>'.format(url, title, co)
+        return text
     
     def makeSound(self, moveSuccess, deadChessNum):
         if not self.settingData.effectSounds or moveSuccess == 0:

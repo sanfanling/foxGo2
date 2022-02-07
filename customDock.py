@@ -45,6 +45,7 @@ class controlWidget(QWidget):
         otherMenu.addAction(self.resignAction)
         self.otherButton.setMenu(otherMenu)
         
+        controlLayout.addStretch(0)
         controlLayout.addWidget(self.toStartButton)
         controlLayout.addWidget(self.fastPrevButton)
         controlLayout.addWidget(self.prevButton)
@@ -54,6 +55,7 @@ class controlWidget(QWidget):
         controlLayout.addWidget(self.toEndButton)
         controlLayout.addWidget(self.backButton)
         controlLayout.addWidget(self.otherButton)
+        controlLayout.addStretch(0)
         
         self.stepsSlider = QSlider(self)
         self.stepsSlider.setTracking(True)
@@ -278,8 +280,11 @@ class commentsDock(QDockWidget):
         super().__init__(title)
         self.parent = parent
         self.commentsDisplay = QTextBrowser()
+        self.commentsDisplay.setOpenLinks(False)
         self.setWidget(self.commentsDisplay)
         self.setFloating(False)
+        
+        self.commentsDisplay.anchorClicked.connect(self.parent.showVariation)
 
 
 if __name__ == "__main__":
