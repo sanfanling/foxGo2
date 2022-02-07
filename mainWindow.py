@@ -9,7 +9,7 @@ from PyQt5.QtMultimedia import QSoundEffect, QSound
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfDataNew import sgfDataNew as sgfData
-from settingData import settingData
+
 import sys, os
 
 class mainWindow(baseWindow):
@@ -18,8 +18,7 @@ class mainWindow(baseWindow):
         super().__init__()
         
         
-        self.settingData = settingData()
-        self.settingData.getSettingData()
+        
         self.withCoordinate.setChecked(self.settingData.withCoordinate)
         self.hideCursor.setChecked(self.settingData.hideCursor)
         self.backgroundMusic.setChecked(self.settingData.backgroundMusic)
@@ -135,6 +134,7 @@ class mainWindow(baseWindow):
     def restartFreeAndTestMode(self):
         self.sgfData.stepsList = self.sgfData.stepsList[:self.stepPoint]
         self.moveOnBoard()
+            
     
     def toStartAction_(self):
         self.stepPoint = self.breakPoint

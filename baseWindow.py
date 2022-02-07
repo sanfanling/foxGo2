@@ -10,6 +10,7 @@ from PyQt5.QtGui import *
 from goBoard import goBoard
 from customDock import *
 from goEngine import go
+from settingData import settingData
 
 
 class baseWindow(QMainWindow):
@@ -18,6 +19,10 @@ class baseWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("foxGo2")
         self.setWindowIcon(QIcon("res/pictures/logo.png"))
+        
+        self.settingData = settingData()
+        self.settingData.getSettingData()
+        
         self.boardSize = 19
         self.initDockwidget()
         self.initCentralWidget()
@@ -139,7 +144,7 @@ class baseWindow(QMainWindow):
         
         viewMenu = self.menuBar().addMenu("View(&V)")
         viewMenu.addAction(self.controlDock.toggleViewAction())
-        viewMenu.addAction(self.stepsTreeDock.toggleViewAction())
+        viewMenu.addAction(self.sgfExplorerDock.toggleViewAction())
         viewMenu.addAction(self.recentGamesDock.toggleViewAction())
         viewMenu.addAction(self.infoDock.toggleViewAction())
         viewMenu.addAction(self.commentsDock.toggleViewAction())
@@ -165,9 +170,9 @@ class baseWindow(QMainWindow):
         self.setCentralWidget(centralWidget)
     
     def initDockwidget(self):
-        self.stepsTreeDock = stepsTreeDock("Steps tree", self)
-        self.stepsTreeDock.setObjectName("Steps tree")
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.stepsTreeDock)
+        self.sgfExplorerDock = sgfExplorerDock("Sgf explorer", self)
+        self.sgfExplorerDock.setObjectName("Sgf explorer")
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.sgfExplorerDock)
         
         self.recentGamesDock = recentGamesDock("Recent games", self)
         self.recentGamesDock.setObjectName("Recent games")

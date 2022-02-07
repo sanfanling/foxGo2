@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from customThread import getCatalogThread, getSgfThread
+import glob
 
 
 
@@ -69,21 +70,44 @@ class controlWidget(QWidget):
         self.stepsSlider.valueChanged.connect(self.stepsCount.setValue)
         self.stepsSlider.sliderReleased.connect(self.parent.gotoSpecifiedStep)
         
-class stepsTreeDock(QDockWidget):
+class sgfExplorerDock(QDockWidget):
     
     def __init__(self, title, parent = None):
         super().__init__(title)
-        self.stepsTreeDisplay = stepsTreeDisplay(parent)
-        self.setWidget(self.stepsTreeDisplay)
+        self.sgfExplorerDisplay = sgfExplorerDisplay(parent)
+        self.setWidget(self.sgfExplorerDisplay)
         self.setFloating(False)
 
 
-class stepsTreeDisplay(QTreeWidget):
+class sgfExplorerDisplay(QWidget):
     
-    def __init__(self, parent):
+    def __init__(self, parent = None):
         super().__init__()
         self.parent = parent
+        mainLayout = QVBoxLayout(None)
         
+        searchLayout = QHBoxLayout(None)
+        self.filterLabel = QLabel("Search:")
+        self.filterLine = QLineEdit()
+        self.filterLine.setClearButtonEnabled(True)
+        searchLayout.addWidget(self.filterLabel)
+        searchLayout.addWidget(self.filterLine)
+        self.explorer = QTreeWidget()
+        self.explorer.setHeaderLabel("Sgf files")
+        mainLayout.addLayout(searchLayout)
+        mainLayout.addWidget(self.explorer)
+        self.setLayout(mainLayout)
+        self.showItems()
+        
+        self.filterLine.textChanged.connect(self.showItems)
+    
+    def showItems(self, t = ""):
+        self.explorer.clear()
+        sgfPath = self.parent.settingData.sgfPath
+        for i in glob.glob(os.path.join(sgfPath, "*.sgf")):
+            baseName, fileName = os.path.split(i)
+            if t in fileName:
+                self.explorer.addTopLevelItem(QTreeWidgetItem([fileName]))
 
 
 class recentGamesDock(QDockWidget):
@@ -289,6 +313,6 @@ class commentsDock(QDockWidget):
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
-	w = infoDisplay()
+	w = sgfExplorerDisplay()
 	w.show()
 	sys.exit(app.exec_())
