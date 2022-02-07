@@ -11,10 +11,14 @@ class sgfDataNew:
         
     def checkSgf(self, data):
         gameList = []
-        self.collection = sgf.parse(data)
-        for game in self.collection.children:
-            title = game.root.properties["GN"][0]
-            gameList.append(title)
+        try:
+            self.collection = sgf.parse(data)
+        except:
+            raise
+        else:
+            for game in self.collection.children:
+                title = game.root.properties["GN"][0]
+                gameList.append(title)
         return gameList
     
     def parseGame(self, ind = 0):

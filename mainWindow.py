@@ -96,30 +96,28 @@ class mainWindow(baseWindow):
     
     def startReviewMode(self, sgf):
         self.sgfData.init()
-        #try:
-        gameList = self.sgfData.checkSgf(sgf)
-        if len(gameList) != 1:
-            pass
+        try:
+            gameList = self.sgfData.checkSgf(sgf)
+            if len(gameList) != 1:
+                pass
+        except:
+            QMessageBox.critical(self, "Sfg file parse error", "It may be caused because of broken sfg file!")
+            return
         else:
             self.sgfData.parseGame(0)
-        
-        #except:
-            #QMessageBox.critical(self, "Sfg file parse error", "It may be caused because of broken sfg file!")
-            #return
-        #else:
-        self.mode = "review"
-        self.modeLabel.setText("Current mode: review")
-        self.thisGame.init()
-        self.thisGame.getHaSteps(self.sgfData.haList)
-        self.resignAction.setEnabled(False)
-        self.controlDock.controlWidget.resignAction.setEnabled(False)
-        self.stepPoint = len(self.sgfData.stepsList)
-        self.breakPoint = 0
-        self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
-        self.controlDock.controlWidget.stepsSlider.setRange(0, self.stepPoint)
-        self.displayGameInfo()
-        self.showStepsCount()
-        self.moveOnBoard()
+            self.mode = "review"
+            self.modeLabel.setText("Current mode: review")
+            self.thisGame.init()
+            self.thisGame.getHaSteps(self.sgfData.haList)
+            self.resignAction.setEnabled(False)
+            self.controlDock.controlWidget.resignAction.setEnabled(False)
+            self.stepPoint = len(self.sgfData.stepsList)
+            self.breakPoint = 0
+            self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
+            self.controlDock.controlWidget.stepsSlider.setRange(0, self.stepPoint)
+            self.displayGameInfo()
+            self.showStepsCount()
+            self.moveOnBoard()
     
     def startTestMode(self, variation = []):
         self.mode = "test"
