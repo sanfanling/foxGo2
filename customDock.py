@@ -130,6 +130,8 @@ class recentGamesDisplay(QWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.downloadSign = False
+        self.fileName = None
         mainLayout = QVBoxLayout(None)
         self.stack = QStackedWidget()
         self.loadingLabel = QLabel("Loading...")
@@ -166,7 +168,7 @@ class recentGamesDisplay(QWidget):
         self.refreshButton.clicked.connect(self.pageToLabel)
         self.viewButton.clicked.connect(self.viewButton_)
         self.sgfThread.missionDone.connect(self.sgfGot)
-        #self.downButton.clicked.connect(self.saveToLocal)
+        self.downButton.clicked.connect(self.downButton_)
         
     
     def pageToTable(self, catalog):
@@ -191,7 +193,16 @@ class recentGamesDisplay(QWidget):
         self.catalogThread.start()
     
     def viewButton_(self):
+        self.downloadSign = False
+        self.__startThread()
+    
+    def downButton_(self):
+        self.downloadSign = True
+        self.__startThread()
+    
+    def __startThread(self):
         row = self.table.currentRow()
+        self.fileName = self.table.item(row, 0).text().replace("/", "-")
         if row == -1:
             QMessageBox.warning(self, "Error", "No item is selected, download fail!")
         else:
@@ -200,7 +211,15 @@ class recentGamesDisplay(QWidget):
             self.sgfThread.start()
     
     def sgfGot(self, sgf):
-        self.parent.startReviewMode(sgf)
+        if self.downloadSign:
+            p = os.path.join(self.parent.settingData.sgfPath, "{}.sgf".format(self.fileName))
+            if not os.path.exists(p):
+                with open(p, "w") as f:
+                    f.write(sgf)
+                self.parent.statusBar().showMessage("Download successfule!", 5000)
+                self.parent.sgfExplorerDock.sgfExplorerDisplay.showItems()
+        else:
+            self.parent.startReviewMode(sgf)
             
         
 

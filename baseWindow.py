@@ -197,7 +197,7 @@ class baseWindow(QMainWindow):
     def initStatusBar(self):
         self.modeLabel = QLabel()
         #self.modeLabel.setAlignment(Qt.AlignLeft)
-        self.statusBar().addWidget(self.modeLabel)
+        self.statusBar().addPermanentWidget(self.modeLabel)
     
     def printGo_(self):
         printer = QPrinter()
