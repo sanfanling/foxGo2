@@ -166,6 +166,7 @@ class recentGamesDisplay(QWidget):
         self.refreshButton.clicked.connect(self.pageToLabel)
         self.viewButton.clicked.connect(self.viewButton_)
         self.sgfThread.missionDone.connect(self.sgfGot)
+        #self.downButton.clicked.connect(self.saveToLocal)
         
     
     def pageToTable(self, catalog):
@@ -191,9 +192,12 @@ class recentGamesDisplay(QWidget):
     
     def viewButton_(self):
         row = self.table.currentRow()
-        key = self.table.item(row, 2).text()
-        self.sgfThread.key = key
-        self.sgfThread.start()
+        if row == -1:
+            QMessageBox.warning(self, "Error", "No item is selected, download fail!")
+        else:
+            key = self.table.item(row, 2).text()
+            self.sgfThread.key = key
+            self.sgfThread.start()
     
     def sgfGot(self, sgf):
         self.parent.startReviewMode(sgf)

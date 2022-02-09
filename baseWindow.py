@@ -30,8 +30,7 @@ class baseWindow(QMainWindow):
         self.initStatusBar()
         
         self.thisGame = go()
-        
-        
+
         self.board.startPaint.connect(self.removeFromLayout)
         self.board.endPaint.connect(self.addToLayout)
         self.aboutQt.triggered.connect(self.aboutQt_)

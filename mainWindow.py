@@ -9,6 +9,7 @@ from PyQt5.QtMultimedia import QSoundEffect, QSound
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfDataNew import sgfDataNew as sgfData
+import faceDict
 
 import sys, os
 
@@ -16,8 +17,6 @@ class mainWindow(baseWindow):
     
     def __init__(self):
         super().__init__()
-        
-        
         
         self.withCoordinate.setChecked(self.settingData.withCoordinate)
         self.hideCursor.setChecked(self.settingData.hideCursor)
@@ -235,13 +234,22 @@ class mainWindow(baseWindow):
         if self.mode == "review" and self.stepPoint != 0:
             com = self.sgfData.stepsMap[self.stepPoint - 1].comment
             if com != None:
-                self.commentsDock.commentsDisplay.setPlainText(com)
+                com = com.replace("\n", "<br>")
+                
+                self.commentsDock.commentsDisplay.insertHtml(self.faceConvert(com))
                 
             
             var = self.sgfData.stepsMap[self.stepPoint - 1].variations
             if var != []:
                 self.commentsDock.commentsDisplay.moveCursor(QTextCursor.End)
                 self.commentsDock.commentsDisplay.insertHtml(self.formatVariation())
+        
+    def faceConvert(self, c):
+        for i in faceDict.faceDict:
+            if i in c:
+                c = c.replace(i, "<img src='face/{}'/>".format(faceDict.faceDict[i]))
+        return c
+        
     
     def showVariation(self, link):
         self.commentsDock.commentsDisplay.clear()
@@ -263,6 +271,7 @@ class mainWindow(baseWindow):
             url = "{}-{}".format(self.stepPoint, p)
             title = "Variation: {}: ".format(url)
             text += '<a href="{}">{}</a> {}<br>'.format(url, title, co)
+            text = self.faceConvert(text)
         return text
     
     def makeSound(self, moveSuccess, deadChessNum):
