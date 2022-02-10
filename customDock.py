@@ -238,7 +238,7 @@ class infoDisplay(QWidget):
         self.parent = parent
         mainLayout = QVBoxLayout(None)
         
-        self.gameLabel = QLabel("中国围棋甲级联赛决赛")
+        self.gameLabel = QLabel("-")
         self.gameLabel.setAlignment(Qt.AlignCenter)
         self.gameLabel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.gameLabel.setStyleSheet("QLabel {font-weight: bold; font-size: 15px}")
@@ -339,6 +339,38 @@ class commentsDock(QDockWidget):
         self.setFloating(False)
         
         self.commentsDisplay.anchorClicked.connect(self.parent.showVariation)
+
+
+class consoleDock(QDockWidget):
+    
+    def __init__(self, title, parent = None):
+        super().__init__(title)
+        self.parnet = parent
+        self.consoleDisplay = consoleDisplay(parent)
+        self.setWidget(self.consoleDisplay)
+        self.setFloating(False)
+
+class consoleDisplay(QWidget):
+    
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        mainLayout = QVBoxLayout(None)
+        self.console = QTextBrowser()
+        self.console.setAcceptRichText(False)
+        hlayout = QHBoxLayout(None)
+        self.clearButton = QPushButton("Clear")
+        hlayout.addStretch(0)
+        hlayout.addWidget(self.clearButton)
+        mainLayout.addWidget(self.console)
+        mainLayout.addLayout(hlayout)
+        self.setLayout(mainLayout)
+        
+        self.clearButton.clicked.connect(self.console.clear)
+    
+    def addOutput(self, sender, m):
+        self.console.append("[{}: ] {}".format(sender, m))
+        
 
 
 if __name__ == "__main__":

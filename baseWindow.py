@@ -9,7 +9,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from goBoard import goBoard
 from customDock import *
-from goEngine import go
+
 from settingData import settingData
 
 
@@ -29,7 +29,7 @@ class baseWindow(QMainWindow):
         self.initMenuBar()
         self.initStatusBar()
         
-        self.thisGame = go()
+        
 
         self.board.startPaint.connect(self.removeFromLayout)
         self.board.endPaint.connect(self.addToLayout)
@@ -60,8 +60,10 @@ class baseWindow(QMainWindow):
         gameMenu = self.menuBar().addMenu("Game(&G)")
         self.newGame = QAction("New")
         self.fileOpen = QAction("Open...")
+        self.saveAs = QAction("Save as...")
         gameMenu.addAction(self.newGame)
         gameMenu.addAction(self.fileOpen)
+        gameMenu.addAction(self.saveAs)
         gameMenu.addSeparator()
         self.printGo = QAction("Print...")
         self.printGoPreview = QAction("Print preview...")
@@ -147,6 +149,7 @@ class baseWindow(QMainWindow):
         viewMenu.addAction(self.recentGamesDock.toggleViewAction())
         viewMenu.addAction(self.infoDock.toggleViewAction())
         viewMenu.addAction(self.commentsDock.toggleViewAction())
+        viewMenu.addAction(self.consoleDock.toggleViewAction())
         
         settingMenu = self.menuBar().addMenu("Settings(&S)")
         self.settingAction = QAction("Configrate foxGo2...")
@@ -188,6 +191,10 @@ class baseWindow(QMainWindow):
         self.controlDock = controlDock("Control", self)
         self.controlDock.setObjectName("Control")
         self.addDockWidget(Qt.BottomDockWidgetArea, self.controlDock)
+        
+        self.consoleDock = consoleDock("Console", self)
+        self.consoleDock.setObjectName("Console")
+        self.addDockWidget(Qt.RightDockWidgetArea, self.consoleDock)
         
         self.setCorner(Qt.BottomLeftCorner, Qt.LeftDockWidgetArea)
         self.setCorner(Qt.BottomRightCorner, Qt.RightDockWidgetArea)

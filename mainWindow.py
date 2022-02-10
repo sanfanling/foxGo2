@@ -10,6 +10,7 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfDataNew import sgfDataNew as sgfData
 import faceDict
+from goEngine import go
 
 import sys, os
 
@@ -17,6 +18,8 @@ class mainWindow(baseWindow):
     
     def __init__(self):
         super().__init__()
+        
+        self.thisGame = go(self)
         
         self.withCoordinate.setChecked(self.settingData.withCoordinate)
         self.hideCursor.setChecked(self.settingData.hideCursor)

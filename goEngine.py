@@ -3,7 +3,8 @@
 
 class go:
     
-    def __init__(self):
+    def __init__(self, parent = None):
+        self.parent = parent
         self.init()
     
     def init(self):
@@ -49,25 +50,37 @@ class go:
             deadList = self.checkEnemyBlockBreath(self.x, self.y, dict(self.stepsGoDict), self.goColor)
             deadListLen = len(deadList)
             if haveBreath and deadListLen == 0:
-                print("has liberty, legal move!")
+                if __name__ == "goEngine":
+                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "has liberty, legal move!")
+                else:
+                    print("has liberty, legal move!")
                 self.stepSuccess()
                 self.endStepSuccess()
                 #self.changeColor()
                 return (1, 0)
             elif haveBreath and deadListLen != 0:
-                print("has liberty, legal move, take!")
-                print(deadList)
+                if __name__ == "goEngine":
+                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "has liberty, legal move, take!")
+                else:
+                    print("has liberty, legal move, take!")
+                #print(deadList)
                 self.stepSuccess()
                 chess = self.eatChess(deadList)
                 self.endStepSuccess()
                 #self.changeColor()
                 return (2, chess)
             elif not haveBreath and deadListLen == 0:
-                print("no libery, no take, illegal move!")
+                if __name__ == "goEngine":
+                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "no libery, no take, illegal move!")
+                else:
+                    print("no libery, no take, illegal move!")
                 return (0, 0)
             elif not haveBreath and deadListLen != 0:
-                print("no liberty，but legal move, take! it maybe a ko, check!")
-                print(deadList)
+                if __name__ == "goEngine":
+                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "no liberty，but legal move, take! it maybe a ko, check!")
+                else:
+                    print("no liberty，but legal move, take! it maybe a ko, check!")
+                #print(deadList)
                 if not self.checkJie(deadList):
                     self.stepSuccess()
                     chess = self.eatChess(deadList)
@@ -75,7 +88,10 @@ class go:
                     #self.changeColor()
                     return (2, chess)
                 else:
-                    print("it's a ko, illegal move!")   
+                    if __name__ == "goEngine":
+                        self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "it's a ko, illegal move!")
+                    else:
+                        print("it's a ko, illegal move!")   
                     return (0, 0)
         return (0, 0)
 
