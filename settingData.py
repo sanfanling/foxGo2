@@ -27,6 +27,7 @@ class settingData:
         self.backgroundMusic = self.cf.getboolean("general", "backgroundmusic")
         self.musicPath = self.cf.get("general", "musicpath")
         self.effectSounds = self.cf.getboolean("general", "effectsounds")
+        self.autoSkip = self.cf.getboolean("general", "autoskip")
         self.withCoordinate = self.cf.getboolean("board", "withcoordinate")
         self.stepsNumber = self.cf.get("board", "stepsnumber")
         self.boardStyle = self.cf.get("board", "boardstyle")
@@ -66,6 +67,7 @@ class settingData:
         backgroundmusic = False
         musicpath = res/sounds/gsls.wav
         effectsounds = False
+        autoskip = True
         
         [board]
         withcoordinate = True

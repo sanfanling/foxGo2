@@ -11,6 +11,7 @@ from baseWindow import baseWindow
 from sgfData import sgfData
 import faceDict
 from goEngine import go
+from configrationDialog import configrationDialog
 
 import sys, os
 
@@ -62,6 +63,7 @@ class mainWindow(baseWindow):
         self.stepsNumberAll.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberCurrent.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberHide.triggered.connect(self.changeStepsNumber_)
+        self.settingAction.triggered.connect(self.settingAction_)
         self.quit.triggered.connect(self.close)
         
         
@@ -250,7 +252,7 @@ class mainWindow(baseWindow):
     def faceConvert(self, c):
         for i in faceDict.faceDict:
             if i in c:
-                c = c.replace(i, "<img src='face/{}'/>".format(faceDict.faceDict[i]))
+                c = c.replace(i, "<img src='res/face/{}'/>".format(faceDict.faceDict[i]))
         return c
         
     
@@ -299,6 +301,17 @@ class mainWindow(baseWindow):
         if fileName:
             with open(fileName) as f:
                 self.startReviewMode(f.read())
+    
+    def settingAction_(self):
+        dialog = configrationDialog(self)
+        dialog.pathBox.sgfPath.setText(self.settingData.sgfPath)
+        dialog.pathBox.customMusic.setText(self.settingData.musicPath)
+        dialog.optionBox.autoSkip.setChecked(self.settingData.autoSkip)
+        if dialog.exec_() == QDialog.Accepted:
+            self.settingData.sgfPath = dialog.pathBox.sgfPath.text()
+            self.sgfExplorerDock.sgfExplorerDisplay.syncPath()
+            self.settingData.musicPath = dialog.pathBox.customMusic.text()
+            self.settingData.autoSkip = dialog.optionBox.autoSkip.isChecked()
     
     def withCoordinate_(self, b):
         self.settingData.withCoordinate = b

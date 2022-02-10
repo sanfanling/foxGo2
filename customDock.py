@@ -103,6 +103,9 @@ class sgfExplorerDisplay(QWidget):
         self.filterLine.textChanged.connect(self.showItems)
         self.explorer.itemDoubleClicked.connect(self.showSelectedSgfFile)
         
+    def syncPath(self):
+        self.sgfPath = self.parent.settingData.sgfPath
+        self.showItems()
     
     def showItems(self, t = ""):
         self.explorer.clear()
