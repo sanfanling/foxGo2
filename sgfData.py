@@ -1,5 +1,6 @@
 #!/bin/use/python
 
+
 import sgf
 
 
@@ -7,10 +8,21 @@ class sgfData:
     
     def __init__(self):
         self.init()
+        
+    def checkSgf(self, data):
+        gameList = []
+        try:
+            self.collection = sgf.parse(data)
+        except:
+            raise
+        else:
+            for game in self.collection.children:
+                title = game.root.properties["GN"][0]
+                gameList.append(title)
+        return gameList
     
-    def parse(self, data):
-        collection = sgf.parse(data)
-        self.game = collection.children[0]
+    def parseGame(self, ind = 0):
+        self.game = self.collection.children[ind]
         self.head = self.game.root.properties
         self.rest = self.game.rest
         self.title = self.head["GN"][0]
@@ -24,11 +36,17 @@ class sgfData:
         self.rule = self.head["RU"][0]
         self.ha = self.head["HA"][0]
         self.timeLimit = self.head["TM"][0]
-        self.stepsList, self.haList = self.getStepsData(self.rest)
+        self.stepsMap = self.parseSteps(self.rest, False)
+        self.haMap = self.parseHaSteps(self.rest)
+        self.stepsList = self.parseStepsMap(self.stepsMap, False)
+        self.haList = self.parseStepsMap(self.haMap, True)
+            
         
     def init(self):
         self.stepsList = []
         self.haList = []
+        self.stepsMap = []
+        self.haMap = []
         self.title = "-"
         self.blackPlayer = "-"
         self.whitePlayer = "-"
@@ -41,91 +59,68 @@ class sgfData:
         self.ha = "-"
         self.timeLimit = "-"
     
-    def getStepsData(self, iterator):
-        stepsList = []
-        haList = []
-        j = 0
+    def parseSteps(self, iterator, inVariation = False):
+        stepsMap = []
         for i in iterator:
             if "AB" in i.properties:
-                haList = self.getHaData(i.properties["AB"])
                 continue
-            
-            j += 1
+            oneStep = step(inVariation)
             if "B" in i.properties:
-                goColor = "black"
-                xname = i.properties["B"][0][0]
-                yname = i.properties["B"][0][1]
+                oneStep.color = "black"
+                oneStep.coordinate = i.properties["B"][0]
             elif "W" in i.properties:
-                goColor = "white"
-                xname = i.properties["W"][0][0]
-                yname = i.properties["W"][0][1]
-            x = ord(xname)-96
-            y = ord(yname)-96
-            stepsList.append((j, goColor, x, y))
-        return stepsList, haList
+                oneStep.color = "white"
+                oneStep.coordinate = i.properties["W"][0]
+            if "C" in i.properties:
+                oneStep.comment = i.properties["C"][0]
+            if len(i.variations) != 0:
+                for j in i.variations[1:]:
+                    it = self.recursionNode(j, [])
+                    oneStep.variations.append(self.parseSteps(it, True))
+            stepsMap.append(oneStep)
+        return stepsMap
     
-    def getHaData(self, hal):
-        dl = []
-        for i in hal:
-            xname = i[0]
-            yname = i[1]
-            x = ord(xname)-96
-            y = ord(yname)-96
-            dl.append((x, y))
-        return dl
-    
-
-    def getCommentsData(self, iterator, variationComment = False):
-        commentDict = {}
-        comment = ""
-        j = 0
+    def parseHaSteps(self, iterator):
+        haMap = []
         for i in iterator:
             if "AB" in i.properties:
-                continue
-            j += 1
-            if "C" in i.properties:
-                comment = i.properties["C"][0]
-                commentDict[j] = comment
-        if not variationComment:
-            return commentDict
-        else:
-            return comment
+                for j in i.properties["AB"]:
+                    haStep = step(False)
+                    haStep.color = "black"
+                    haStep.coordinate = j
+                    haMap.append(haStep)
+        return haMap
     
-    def getVariations(self):
-        p = 0
-        variationDict = {}
-        for i in self.rest:
-            if "AB" in i.properties:
-                continue
-            p += 1
-            if len(i.variations) != 0:
-                variationList = []
-                for j in i.variations[1:]:
-                    v = self.recursionNode(j, [], 0)
-                    subList = self.getStepsData(v)[0]
-                    subComment = self.getCommentsData(v, True)
-                    subList.append(subComment)
-                    variationList.append(subList)
-                variationDict[p] = variationList
-        return variationDict
-
-    def recursionNode(self, node, var, k):
-        k += 1
+    def parseStepsMap(self, stepsMap, isHaMap = False):
+        stepNum = 1
+        stepsList = []
+        for i in stepsMap:
+            x = ord(i.coordinate[0]) - 96
+            y = ord(i.coordinate[1]) - 96
+            if not isHaMap:
+                stepsList.append((stepNum, i.color, x, y))
+            else:
+                stepsList.append((x, y))
+            stepNum += 1
+        return stepsList
+    
+    def recursionNode(self, node, var):
         var.append(node)
-        #var.append([k, self.getColor, self.getx, self.gety])
         node = node.next
         if node == None:
             return var
         else:
-            self.recursionNode(node, var, k)
+            self.recursionNode(node, var)
         return var
+            
+                    
+        
 
-
-if __name__ == "__main__":
-    with open("2.sgf", "r") as f:
-        d = f.read()
-    a = sgfData()
-    a.parse(d)
-    print(a.getCommentsData(a.rest))
-    print(a.getVariations())
+class step:
     
+    def __init__(self, inVariation):
+        self.color = None
+        self.coordinate = None
+        self.comment = None
+        self.variations = []
+        self.inVariation = inVariation

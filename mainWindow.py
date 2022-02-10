@@ -8,7 +8,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSoundEffect, QSound
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
-from sgfDataNew import sgfDataNew as sgfData
+from sgfData import sgfData
 import faceDict
 from goEngine import go
 
