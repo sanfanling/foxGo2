@@ -225,15 +225,18 @@ class mainWindow(baseWindow):
         tmpList = self.sgfData.stepsList[:self.stepPoint]
         moveSuccess = 0
         deadChessNum = 0
-        for i, c, x, y in tmpList:
-            self.thisGame.stepNum = i
-            self.thisGame.goColor = c
-            self.thisGame.x = x
-            self.thisGame.y = y
-            moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
+        if len(tmpList) != 0:
+            for i, c, x, y in tmpList:
+                self.thisGame.stepNum = i
+                self.thisGame.goColor = c
+                self.thisGame.x = x
+                self.thisGame.y = y
+                moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
             self.thisGame.changeColor()
+            self.makeSound(moveSuccess, deadChessNum)
+        else:
+            self.thisGame.goColor = "black"
         self.board.update()
-        self.makeSound(moveSuccess, deadChessNum)
         
         self.commentsDock.commentsDisplay.clear()
         if self.mode == "review" and self.stepPoint != 0:
