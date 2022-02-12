@@ -44,8 +44,14 @@ class mainWindow(baseWindow):
             self.stepsNumberAll.setChecked(True)
         else:
             self.stepsNumberHide.setChecked(True)
-        if self.settingData.windowState != b"":
+        try:
             self.restoreState(self.settingData.windowState)
+        except:
+            pass
+        try:
+            self.restoreGeometry(self.settingData.windowGeometry)
+        except:
+            pass
         
         self.sgfData = sgfData()
         self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
@@ -348,8 +354,10 @@ class mainWindow(baseWindow):
     def closeEvent(self, e):
         #os.remove(os.path.expanduser("~/.foxGo2/lock"))
         self.settingData.windowState = self.saveState()
-        self.settingData.setSettingData()
-        self.settingData.writeToFile()
+        self.settingData.windowGeometry = self.saveGeometry()
+        self.settingData.saveIniFile()
+        #self.settingData.setSettingData()
+        #self.settingData.writeToFile()
         e.accept()
 
 

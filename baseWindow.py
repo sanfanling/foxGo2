@@ -21,7 +21,7 @@ class baseWindow(QMainWindow):
         self.setWindowIcon(QIcon("res/pictures/logo.png"))
         
         self.settingData = settingData()
-        self.settingData.getSettingData()
+        #self.settingData.getSettingData()
         
         self.boardSize = 19
         self.initDockwidget()

@@ -17,5 +17,4 @@
 * jtauber: provide effecient sgf parser
 * Alice Xu: logo designer
 
-***PLEASE NOTE: IF ERROR OCCURS ONCE RUNNING, TRY TO DEL YOUR CONFIG FILE ($HOME/.foxGo2/foxGo2.conf), SINCE THE WHOLE APPLICATION IS UNDER DEVELOPING***
-***PLEASE NOTE: IF THE APPLICATION CRASHED ON YOUR SYSTEM, PLEASE DEL THE LOCK FILE ($HOME/.foxGo2/lock), WHICH WAS CREATED FOR PREVENTING THE 2ND APPLICATION INSTANCE***
+***PLEASE NOTE: the config file in later git version is "./.foxGo2.ini" and default sgf path is source dir***
