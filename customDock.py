@@ -400,7 +400,7 @@ class consoleDisplay(QWidget):
         self.clearButton.clicked.connect(self.console.clear)
     
     def addOutput(self, sender, m):
-        self.console.append("[{}: ] {}".format(sender, m))
+        self.console.append("[{}] {}".format(sender, m))
         
 
 

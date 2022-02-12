@@ -31,6 +31,7 @@ class go:
             #self.stepsGoEasy.append((self.x, self.y))
             self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
             self.endStepSuccess()
+            #self.changeColor()
             return (1, 0)
         else:
             #print("review模式：有死棋")
@@ -38,6 +39,7 @@ class go:
             self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
             chess = self.eatChess(deadList)
             self.endStepSuccess()
+            #self.changeColor()
             return (2, chess)
     
     def makeStepPass(self):
