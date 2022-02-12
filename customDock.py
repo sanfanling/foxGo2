@@ -17,6 +17,10 @@ class controlDock(QDockWidget):
     
     def __init__(self, title, parent = None):
         super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.controlDockGeometry)
+        except:
+            pass
         self.controlWidget = controlWidget(parent)
         self.setWidget(self.controlWidget)
         self.setFloating(False)
@@ -74,6 +78,10 @@ class sgfExplorerDock(QDockWidget):
     
     def __init__(self, title, parent = None):
         super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.sgfExplorerDockGeometry)
+        except:
+            pass
         self.sgfExplorerDisplay = sgfExplorerDisplay(parent)
         self.setWidget(self.sgfExplorerDisplay)
         self.setFloating(False)
@@ -124,6 +132,10 @@ class recentGamesDock(QDockWidget):
     
     def __init__(self, title, parent = None):
         super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.recentGameDockGeometry)
+        except:
+            pass
         self.recentGamesDisplay = recentGamesDisplay(parent)
         self.setWidget(self.recentGamesDisplay)
         self.setFloating(False)
@@ -148,6 +160,10 @@ class recentGamesDisplay(QWidget):
         self.table.setHorizontalHeaderLabels(header)
         self.stack.addWidget(self.loadingLabel)
         self.stack.addWidget(self.table)
+        try:
+            self.table.horizontalHeader().restoreState(parent.settingData.recentGamesDockTableState)
+        except:
+            pass
         
         
         buttonLayout = QHBoxLayout(None)
@@ -230,6 +246,10 @@ class infoDock(QDockWidget):
     
     def __init__(self, title, parent = None):
         super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.infoDockGeometry)
+        except:
+            pass
         self.infoDisplay = infoDisplay(parent)
         self.setWidget(self.infoDisplay)
         self.setFloating(False)
@@ -335,6 +355,10 @@ class commentsDock(QDockWidget):
     
     def __init__(self, title, parent):
         super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.commentsDockGeometry)
+        except:
+            pass
         self.parent = parent
         self.commentsDisplay = QTextBrowser()
         self.commentsDisplay.setOpenLinks(False)
@@ -348,6 +372,10 @@ class consoleDock(QDockWidget):
     
     def __init__(self, title, parent = None):
         super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.consoleDockGeometry)
+        except:
+            pass
         self.parnet = parent
         self.consoleDisplay = consoleDisplay(parent)
         self.setWidget(self.consoleDisplay)

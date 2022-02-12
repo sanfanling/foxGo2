@@ -24,6 +24,12 @@ class settingData:
         self.hideCursor = bool(self.iniFile.value("board/hidecursor", False))
         self.windowState = self.iniFile.value("session/windowstate/", "")
         self.windowGeometry = self.iniFile.value("session/windowgeometry", "")
+        self.infoDockGeometry = self.iniFile.value("session/infodockgeometry", "")
+        self.controlDockGeometry = self.iniFile.value("session/controldockgeometry", "")
+        self.consoleDockGeometry = self.iniFile.value("session/consoledockgeometry", "")
+        self.sgfExplorerDockGeometry = self.iniFile.value("session/sgfexplorerdockgeometry", "")
+        self.recentGamesDockGeometry = self.iniFile.value("session/recentgamesdockgeometry", "")
+        self.recentGamesDockTableState = self.iniFile.value("session/recentgamesdocktablestate", "")
     
     def saveIniFile(self):
         self.iniFile.setValue("general/sgfpath", self.sgfPath)
@@ -37,6 +43,12 @@ class settingData:
         self.iniFile.setValue("board/hidecursor", self.hideCursor)
         self.iniFile.setValue("session/windowstate", self.windowState)
         self.iniFile.setValue("session/windowgeometry", self.windowGeometry)
+        self.iniFile.setValue("session/infodockgeometry", self.infoDockGeometry)
+        self.iniFile.setValue("session/controldockgeometry", self.controlDockGeometry)
+        self.iniFile.setValue("session/consoledockgeometry", self.consoleDockGeometry)
+        self.iniFile.setValue("session/sgfexplorerdockgeometry", self.sgfExplorerDockGeometry)
+        self.iniFile.setValue("session/recentgamesdockgeometry", self.recentGamesDockGeometry)
+        self.iniFile.setValue("session/recentgamesdocktablestate", self.recentGamesDockTableState)
 
 
 if __name__ == "__main__":
