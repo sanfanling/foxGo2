@@ -10,7 +10,7 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfData import sgfData
 import faceDict
-from goEngine import go
+from goEngineNew import go
 from configrationDialog import configrationDialog
 
 import sys, os
@@ -21,7 +21,9 @@ class mainWindow(baseWindow):
         super().__init__()
         
         self.thisGame = go(self)
+        self.thisGame.init(self.settingData.boardSize)
         
+        eval("self.size{}.setChecked(True)".format(self.settingData.boardSize))
         self.withCoordinate.setChecked(self.settingData.withCoordinate)
         self.hideCursor.setChecked(self.settingData.hideCursor)
         self.backgroundMusic.setChecked(self.settingData.backgroundMusic)
@@ -65,6 +67,9 @@ class mainWindow(baseWindow):
         self.effectSounds.toggled.connect(self.effectSounds_)
         self.boardStyle1.triggered.connect(self.changeBoardStyle_)
         self.boardStyle2.triggered.connect(self.changeBoardStyle_)
+        self.size9.triggered.connect(self.changeBoardSize_)
+        self.size13.triggered.connect(self.changeBoardSize_)
+        self.size19.triggered.connect(self.changeBoardSize_)
         self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
         self.stepsNumberAll.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberCurrent.triggered.connect(self.changeStepsNumber_)
@@ -92,7 +97,7 @@ class mainWindow(baseWindow):
         self.mode = "free"
         self.modeLabel.setText("Current mode: free")
         self.sgfData.init()
-        self.thisGame.init()
+        self.thisGame.init(self.settingData.boardSize)
         self.stepPoint = 0
         self.breakPoint = 0
         self.backAction.setEnabled(False)
@@ -116,7 +121,7 @@ class mainWindow(baseWindow):
             self.sgfData.parseGame(0)
             self.mode = "review"
             self.modeLabel.setText("Current mode: review")
-            self.thisGame.init()
+            self.thisGame.init(self.settingData.boardSize)
             self.thisGame.getHaSteps(self.sgfData.haList)
             self.resignAction.setEnabled(False)
             self.controlDock.controlWidget.resignAction.setEnabled(False)
@@ -310,6 +315,11 @@ class mainWindow(baseWindow):
         if fileName:
             with open(fileName) as f:
                 self.startReviewMode(f.read())
+    
+    def changeBoardSize_(self):
+        self.settingData.boardSize = int(self.sender().text().split("x")[0])
+        self.board.setBoardSize(self.settingData.boardSize)
+        self.startFreeMode()
     
     def settingAction_(self):
         dialog = configrationDialog(self)

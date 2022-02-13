@@ -12,13 +12,13 @@ class settingData:
     
     def __init__(self):
         self.iniFile = QSettings("./.foxGo2.ini", QSettings.IniFormat)
-        self.iniFile.sync()
         
         self.sgfPath = self.iniFile.value("/common/sgfpath", ".")
         self.backgroundMusic = self.stringToBool(self.iniFile.value("/common/backgroundmusic", False))
         self.musicPath = self.iniFile.value("/common/musicpath", "./res/sounds/gsls.wav")
         self.effectSounds = self.stringToBool(self.iniFile.value("/common/effectsounds", False))
         self.autoSkip = self.stringToBool(self.iniFile.value("/common/autoskip", True))
+        self.boardSize = int(self.iniFile.value("/board/boardsize", 19))
         self.withCoordinate = self.stringToBool(self.iniFile.value("/board/withcoordinate", True))
         self.stepsNumber = self.iniFile.value("/board/stepsnumber", "hide")
         self.boardStyle = self.iniFile.value("/board/boardstyle", "style2")
@@ -47,6 +47,7 @@ class settingData:
         self.iniFile.setValue("/common/musicpath", self.musicPath)
         self.iniFile.setValue("/common/effectsounds", self.effectSounds)
         self.iniFile.setValue("/common/autoskip", self.autoSkip)
+        self.iniFile.setValue("/board/boardsize", self.boardSize)
         self.iniFile.setValue("/board/withcoordinate", self.withCoordinate)
         self.iniFile.setValue("/board/stepsnumber", self.stepsNumber)
         self.iniFile.setValue("/board/boardstyle", self.boardStyle)

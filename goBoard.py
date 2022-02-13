@@ -54,7 +54,7 @@ class goBoard(QLabel):
         super().__init__()
         self.parent = parent
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.boardSize = size
+        self.setBoardSize(size)
         #self.setBoardStyle(stylePath)
         self.setSizePara(30)
         self.thinLine = 1
@@ -74,6 +74,9 @@ class goBoard(QLabel):
         self.stonesize = int(self.cellSize * 0.9) // 2 * 2
         self.currentSignSize = int(self.stonesize * 0.3)
         self.update()
+    
+    def setBoardSize(self, s):
+        self.boardSize = s
         
     
     def setBoardStyle(self, style):
