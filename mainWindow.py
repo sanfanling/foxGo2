@@ -67,9 +67,9 @@ class mainWindow(baseWindow):
         self.effectSounds.toggled.connect(self.effectSounds_)
         self.boardStyle1.triggered.connect(self.changeBoardStyle_)
         self.boardStyle2.triggered.connect(self.changeBoardStyle_)
-        self.size9.triggered.connect(self.changeBoardSize_)
-        self.size13.triggered.connect(self.changeBoardSize_)
-        self.size19.triggered.connect(self.changeBoardSize_)
+        self.size9.triggered.connect(self.size9_)
+        self.size13.triggered.connect(self.size13_)
+        self.size19.triggered.connect(self.size19_)
         self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
         self.stepsNumberAll.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberCurrent.triggered.connect(self.changeStepsNumber_)
@@ -121,6 +121,11 @@ class mainWindow(baseWindow):
             self.sgfData.parseGame(0)
             self.mode = "review"
             self.modeLabel.setText("Current mode: review")
+            if self.settingData.boardSize == self.sgfData.size:
+                pass
+            else:
+                eval("self.size{}.setChecked(True)".format(self.sgfData.size))
+                self.changeBoardSize_(self.sgfData.size)
             self.thisGame.init(self.settingData.boardSize)
             self.thisGame.getHaSteps(self.sgfData.haList)
             self.resignAction.setEnabled(False)
@@ -315,11 +320,23 @@ class mainWindow(baseWindow):
         if fileName:
             with open(fileName) as f:
                 self.startReviewMode(f.read())
-    
-    def changeBoardSize_(self):
-        self.settingData.boardSize = int(self.sender().text().split("x")[0])
-        self.board.setBoardSize(self.settingData.boardSize)
+                
+    def size9_(self):
+        self.changeBoardSize_(9)
         self.startFreeMode()
+        
+    def size13_(self):
+        self.changeBoardSize_(13)
+        self.startFreeMode()
+        
+    def size19_(self):
+        self.changeBoardSize_(19)
+        self.startFreeMode()
+        
+    def changeBoardSize_(self, s):
+        self.settingData.boardSize = s
+        self.board.setBoardSize(self.settingData.boardSize)
+        
     
     def settingAction_(self):
         dialog = configrationDialog(self)

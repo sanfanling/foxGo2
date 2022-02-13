@@ -25,6 +25,7 @@ class sgfData:
         self.game = self.collection.children[ind]
         self.head = self.game.root.properties
         self.rest = self.game.rest
+        self.size = int(self.head["SZ"][0])
         self.title = self.head["GN"][0]
         self.blackPlayer = self.head["PB"][0]
         self.whitePlayer = self.head["PW"][0]
