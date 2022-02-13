@@ -5,16 +5,16 @@ class go:
     
     def __init__(self, parent = None):
         self.parent = parent
-        self.init()
     
-    def init(self):
-        #self.stepsGo = []
+    def init(self, boardSize = 19):
+        self.boardSize = boardSize
         self.stepsGoDict = {} #records any existed chesses on board, with chess color info, can append and remove step
+        self.shapeSet = set()
         self.haDict = {} # records the steps of ha
-        self.stepsGoEasy_blackTmp = []
-        self.stepsGoEasy_whiteTmp = []
+        self.shapeList = [] # for checking the rule of global same shape forbidden, ko is a subset of this rule
         self.stepNum = 0
         self.goColor = "black"
+        self.stepInKo = False
         self.x = 0
         self.y = 0
     
@@ -22,92 +22,85 @@ class go:
         for i in haList:
             self.haDict[i] = ("black", 0)
         
-    
+    # this function is called in review mode, usually, every step in review mode is legal move
     def makeStepSafe(self):
         deadList = self.checkEnemyBlockBreath(self.x, self.y, dict(self.stepsGoDict), self.goColor)
         deadListLen = len(deadList)
         if deadListLen == 0:
-            #print("review模式：无死棋")
-            #self.stepsGoEasy.append((self.x, self.y))
             self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
-            self.endStepSuccess()
-            #self.changeColor()
+            #self.endStepSuccess(False)
             return (1, 0)
         else:
-            #print("review模式：有死棋")
-            #self.stepsGoEasy.append((self.x, self.y))
             self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
             chess = self.eatChess(deadList)
-            self.endStepSuccess()
-            #self.changeColor()
+            #self.endStepSuccess(False)
             return (2, chess)
     
     def makeStepPass(self):
         self.changeColor()
         
-    
+    # check every step
     def makeStep(self):
         if (self.x, self.y) not in self.stepsGoDict.keys():
             haveBreath = self.checkBlockBreath(dict(self.stepsGoDict), self.goColor, self.getBlock(self.x, self.y, dict(self.stepsGoDict), self.goColor, []), True, self.x, self.y)
             deadList = self.checkEnemyBlockBreath(self.x, self.y, dict(self.stepsGoDict), self.goColor)
             deadListLen = len(deadList)
             if haveBreath and deadListLen == 0:
-                if __name__ == "goEngine":
-                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "has liberty, legal move!")
-                else:
-                    print("has liberty, legal move!")
+                m = "has liberty, legal move!"
+                self.printMessage(m)
+                self.stepInKo = False
                 self.stepSuccess()
-                self.endStepSuccess()
+                self.endStepSuccess(self.stepInKo)
                 #self.changeColor()
                 return (1, 0)
             elif haveBreath and deadListLen != 0:
-                if __name__ == "goEngine":
-                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "has liberty, legal move, take!")
-                else:
-                    print("has liberty, legal move, take!")
+                m = "has liberty, legal move, take!"
+                self.printMessage(m)
                 #print(deadList)
+                self.stepInKo = False
                 self.stepSuccess()
                 chess = self.eatChess(deadList)
-                self.endStepSuccess()
+                self.endStepSuccess(self.stepInKo)
                 #self.changeColor()
                 return (2, chess)
             elif not haveBreath and deadListLen == 0:
-                if __name__ == "goEngine":
-                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "no libery, no take, illegal move!")
-                else:
-                    print("no libery, no take, illegal move!")
+                m = "no libery, no take, illegal move!"
+                self.printMessage(m)
                 return (0, 0)
             elif not haveBreath and deadListLen != 0:
-                if __name__ == "goEngine":
-                    self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "no liberty，but legal move, take! it maybe a ko, check!")
-                else:
-                    print("no liberty，but legal move, take! it maybe a ko, check!")
-                #print(deadList)
-                if not self.checkJie(deadList):
+                l, t = self.checkKo(deadList)
+                if not l:
                     self.stepSuccess()
                     chess = self.eatChess(deadList)
-                    self.endStepSuccess()
+                    self.endStepSuccess(self.stepInKo)
                     #self.changeColor()
                     return (2, chess)
                 else:
-                    if __name__ == "goEngine":
-                        self.parent.consoleDock.consoleDisplay.addOutput("goEngine", "it's a ko, illegal move!")
+                    if t == 1:
+                        m = "it's a ko, illegal move!"
+                    elif t == 2:
+                        m = "it's a triple-circle ko, illegal move! Advise: draw game!"
                     else:
-                        print("it's a ko, illegal move!")   
+                        m = "it's a miracle ko, illegal move! Advise: draw game!"
+                    self.printMessage(m)
                     return (0, 0)
-        return (0, 0)
+        
+        else:
+            m = "position has been taken, can not move here"
+            self.printMessage(m)
+            return (0, 0)
 
     def stepSuccess(self):
         self.stepNum += 1
-        #self.stepsGo.append((self.stepNum, self.goColor, self.x, self.y))            
-        #self.stepsGoEasy.append((self.x, self.y))
         self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
+        self.shapeSet.add("{},{},{}".format(self.x, self.y, self.goColor))
+        
     
-    def endStepSuccess(self):
-        if self.goColor == "black":
-            self.stepsGoEasy_blackTmp = list(self.stepsGoDict.keys())
-        else:
-            self.stepsGoEasy_whiteTmp = list(self.stepsGoDict.keys())
+    def endStepSuccess(self, stepInKo):
+        v = self.shapeSet.copy()
+        if not stepInKo:
+            del self.shapeList[:-1]
+        self.shapeList.append(v)
     
     def changeColor(self):
         if self.goColor == "black":
@@ -118,32 +111,42 @@ class go:
     def eatChess(self, deadChessList):
         p = 0
         for j in deadChessList:
+            x, y = j
+            c = self.stepsGoDict[j][0]
+            self.shapeSet.discard("{},{},{}".format(x, y, c))
             del self.stepsGoDict[j]
+            
             p += 1
+        
         return p
             
-    def checkJie(self, deadList):
+    def checkKo(self, deadList):
         if len(deadList) != 1:
-            return False
+            self.stepInKo = False
+            return False, 0
         else:
-            stepsGoEasyTmp = list(self.stepsGoDict.keys())
-            stepsGoEasyTmp.append((self.x, self.y))
-            stepsGoEasyTmp.remove(deadList[0])
-            
-            if self.goColor == "black":
-                stepsGoEasyTmp.sort()
-                self.stepsGoEasy_blackTmp.sort()
-                if stepsGoEasyTmp == self.stepsGoEasy_blackTmp:
-                    return True
+            tmp = self.shapeSet.copy()
+            tmp.add("{},{},{}".format(self.x, self.y, self.goColor))
+            x, y = deadList[0]
+            c = self.stepsGoDict[deadList[0]][0]
+            tmp.discard("{},{},{}".format(x, y, c))
+            if tmp in self.shapeList:
+                if tmp == self.shapeList[-2]:
+                    return True, 1
+                elif tmp == self.shapeList[-6]:
+                    return True, 2
                 else:
-                    return False
+                    return True, 3
             else:
-                stepsGoEasyTmp.sort()
-                self.stepsGoEasy_whiteTmp.sort()
-                if stepsGoEasyTmp == self.stepsGoEasy_whiteTmp:
-                    return True
-                else:
-                    return False
+                self.stepInKo = True
+                return False, 0
+    
+    def printMessage(self, m):
+        if __name__ == "main":
+            print("[{}] {}".format(__name__, m))
+        else:
+            self.parent.consoleDock.consoleDisplay.addOutput(__name__, m)
+                
     
     def getBlock(self, x, y, tmpDict, goColor, blockList = []):
         #print("getBlock: 正在搜寻%d,%d周边本方子，并计入块列表" %(x,y))
@@ -155,7 +158,7 @@ class go:
                 logic = tmpDict[(x+offsetx, y+offsety)][0] == goColor
             except:
                 logic = False
-            if 0 < x+offsetx < 20 and 0 < y+offsety < 20 and logic:
+            if 0 < x+offsetx < self.boardSize + 1 and 0 < y+offsety < self.boardSize + 1 and logic:
                 #print("getBlock: 有子联通")
                 self.getBlock(x+offsetx, y+offsety, tmpDict, goColor, blockList)
         #print("getBlock: ")
@@ -168,7 +171,7 @@ class go:
         for (x, y) in blockList:
             for offsetx, offsety in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 #print("checkBlockBreath: 正在查找块中%s,%s的气" %(x, y))
-                if 0 < x+offsetx < 20 and 0 < y+offsety < 20 and (x+offsetx, y+offsety) not in tmpDict.keys():
+                if 0 < x+offsetx < self.boardSize + 1 and 0 < y+offsety < self.boardSize + 1 and (x+offsetx, y+offsety) not in tmpDict.keys():
                     #print("checkBlockBreath: 整块本身有气")
                     return True
         #print("checkBlockBreath: 整块没有气！！")
