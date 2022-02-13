@@ -114,18 +114,24 @@ class mainWindow(baseWindow):
         self.sgfData.init()
         try:
             gameList = self.sgfData.checkSgf(sgf)
-            if len(gameList) != 1:
-                pass
         except:
             QMessageBox.critical(self, "Sfg file parse error", "It may be caused because of broken sfg file!")
             return
         else:
-            self.sgfData.parseGame(0)
+            if len(gameList) != 1:
+                item, ok = QInputDialog.getItem(None, "Choose a game in this sgf file", "Game:", gameList, 0, False)
+                if ok:
+                    ind = gameList.index(item)
+                else:
+                    self.startFreeMode()
+                    return
+            else:
+                ind = 0
+            
+            self.sgfData.parseGame(ind)
             self.mode = "review"
             self.modeLabel.setText("Current mode: review")
-            if self.settingData.boardSize == self.sgfData.size:
-                pass
-            else:
+            if self.settingData.boardSize != self.sgfData.size:
                 eval("self.size{}.setChecked(True)".format(self.sgfData.size))
                 self.changeBoardSize_(self.sgfData.size)
             self.thisGame.init(self.settingData.boardSize)
