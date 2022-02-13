@@ -10,6 +10,7 @@ class sgfData:
         self.init()
         
     def checkSgf(self, data):
+        self.data = data
         gameList = []
         try:
             self.collection = sgf.parse(data)
@@ -44,6 +45,7 @@ class sgfData:
             
         
     def init(self):
+        self.data = ""
         self.stepsList = []
         self.haList = []
         self.stepsMap = []

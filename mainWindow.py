@@ -61,6 +61,7 @@ class mainWindow(baseWindow):
         
         self.newGame.triggered.connect(self.startFreeMode)
         self.fileOpen.triggered.connect(self.fileOpen_)
+        self.saveAs.triggered.connect(self.saveAs_)
         self.withCoordinate.toggled.connect(self.withCoordinate_)
         self.hideCursor.toggled.connect(self.hideCursor_)
         self.backgroundMusic.toggled.connect(self.backgroundMusic_)
@@ -100,6 +101,7 @@ class mainWindow(baseWindow):
         self.thisGame.init(self.settingData.boardSize)
         self.stepPoint = 0
         self.breakPoint = 0
+        self.saveAs.setEnabled(False)
         self.backAction.setEnabled(False)
         self.controlDock.controlWidget.backButton.setEnabled(False)
         self.resignAction.setEnabled(False)
@@ -128,6 +130,7 @@ class mainWindow(baseWindow):
                 self.changeBoardSize_(self.sgfData.size)
             self.thisGame.init(self.settingData.boardSize)
             self.thisGame.getHaSteps(self.sgfData.haList)
+            self.saveAs.setEnabled(True)
             self.resignAction.setEnabled(False)
             self.controlDock.controlWidget.resignAction.setEnabled(False)
             self.stepPoint = len(self.sgfData.stepsList)
@@ -145,6 +148,7 @@ class mainWindow(baseWindow):
         self.stepsListTmp = list(self.sgfData.stepsList)
         self.sgfData.stepsList = self.sgfData.stepsList[:self.stepPoint] + variation
         self.stepPoint += len(variation)
+        self.saveAs.setEnabled(False)
         self.backAction.setEnabled(True)
         self.controlDock.controlWidget.backButton.setEnabled(True)
         self.resignAction.setEnabled(False)
@@ -316,10 +320,16 @@ class mainWindow(baseWindow):
         
     
     def fileOpen_(self):
-        fileName, y= QFileDialog.getOpenFileName(None, "Open a SGF file", "./", "Go records file(*.sgf)")
+        fileName, y= QFileDialog.getOpenFileName(None, "Open a SGF file", self.settingData.sgfPath, "Go records file(*.sgf)")
         if fileName:
             with open(fileName) as f:
                 self.startReviewMode(f.read())
+    def saveAs_(self):
+        t = self.sgfData.title.replace("/", "-")
+        f, filt= QFileDialog.getSaveFileName(None, "Save as", os.path.join(self.settingData.sgfPath, t), "Go records file(*.sgf)")
+        with open(f, "w") as fi:
+            fi.write(self.sgfData.data)
+        self.sgfExplorerDock.sgfExplorerDisplay.showItems()
                 
     def size9_(self):
         self.changeBoardSize_(9)

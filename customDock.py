@@ -123,9 +123,15 @@ class sgfExplorerDisplay(QWidget):
                 self.explorer.addTopLevelItem(QTreeWidgetItem([fileName]))
     
     def showSelectedSgfFile(self, w):
-        with open(os.path.join(self.sgfPath, w.text(0))) as f:
-            sgf = f.read()
-        self.parent.startReviewMode(sgf)
+        try:
+            with open(os.path.join(self.sgfPath, w.text(0))) as f:
+                sgf = f.read()
+        except FileNotFoundError:
+            QMessageBox.critical(self, "Open file error", "The selected file does not exists!")
+            self.filterLine.clear()
+            self.showItems()
+        else:
+            self.parent.startReviewMode(sgf)
 
 
 class recentGamesDock(QDockWidget):
