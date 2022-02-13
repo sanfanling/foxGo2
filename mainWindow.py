@@ -10,7 +10,7 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfData import sgfData
 import faceDict
-from goEngineNew import go
+from goEngine import go
 from configrationDialog import configrationDialog
 
 import sys, os
