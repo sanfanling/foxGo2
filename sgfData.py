@@ -124,6 +124,6 @@ class step:
     def __init__(self, inVariation):
         self.color = None
         self.coordinate = None
-        self.comment = None
+        self.comment = ""
         self.variations = []
         self.inVariation = inVariation
