@@ -356,14 +356,22 @@ class mainWindow(baseWindow):
     
     def settingAction_(self):
         dialog = configrationDialog(self)
-        dialog.pathBox.sgfPath.setText(self.settingData.sgfPath)
-        dialog.pathBox.customMusic.setText(self.settingData.musicPath)
-        dialog.optionBox.autoSkip.setChecked(self.settingData.autoSkip)
+        dialog.pathsBox.sgfPath.setText(self.settingData.sgfPath)
+        dialog.pathsBox.customMusic.setText(self.settingData.musicPath)
+        dialog.optionsBox.autoSkip.setChecked(self.settingData.autoSkip)
         if dialog.exec_() == QDialog.Accepted:
-            self.settingData.sgfPath = dialog.pathBox.sgfPath.text()
+            self.settingData.sgfPath = dialog.pathsBox.sgfPath.text()
             self.sgfExplorerDock.sgfExplorerDisplay.syncPath()
-            self.settingData.musicPath = dialog.pathBox.customMusic.text()
-            self.settingData.autoSkip = dialog.optionBox.autoSkip.isChecked()
+            self.settingData.musicPath = dialog.pathsBox.customMusic.text()
+            self.settingData.autoSkip = dialog.optionsBox.autoSkip.isChecked()
+            self.settingData.previousToStart = dialog.shortcutsBox.previousToStart.keySequence()
+            self.settingData.previous10Steps = dialog.shortcutsBox.previous10Steps.keySequence()
+            self.settingData.previousStep = dialog.shortcutsBox.previousStep.keySequence()
+            self.settingData.nextStep = dialog.shortcutsBox.nextStep.keySequence()
+            self.settingData.next10Steps = dialog.shortcutsBox.next10Steps.keySequence()
+            self.settingData.nextToEnd = dialog.shortcutsBox.nextToEnd.keySequence()
+            self.settingData.back = dialog.shortcutsBox.back.keySequence()
+            self.setAllShortcuts()
     
     def withCoordinate_(self, b):
         self.settingData.withCoordinate = b
@@ -394,8 +402,12 @@ class mainWindow(baseWindow):
             self.settingData.stepsNumber = text
             self.board.update()
     
+    def keyPressEvent(self, e):
+        if e.modifiers() == Qt.ControlModifier and e.key() == Qt.Key_F:
+            self.controlDock.controlWidget.stepsCount.selectAll()
+    
     def closeEvent(self, e):
-        #os.remove(os.path.expanduser("~/.foxGo2/lock"))
+        #os.remove("./lock")
         self.settingData.windowState = self.saveState()
         self.settingData.windowGeometry = self.saveGeometry()
         self.settingData.infoDockGeometry = self.infoDock.saveGeometry()
@@ -405,8 +417,6 @@ class mainWindow(baseWindow):
         self.settingData.recentGamesDockGeometry = self.recentGamesDock.saveGeometry()
         self.settingData.recentGamesDockTableState = self.recentGamesDock.recentGamesDisplay.table.horizontalHeader().saveState()
         self.settingData.saveIniFile()
-        #self.settingData.setSettingData()
-        #self.settingData.writeToFile()
         e.accept()
 
 

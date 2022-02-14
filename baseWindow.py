@@ -119,6 +119,7 @@ class baseWindow(QMainWindow):
         self.fastNextAction = QAction("Next 10 steps")
         self.toEndAction = QAction("Next to end")
         self.backAction = QAction("Back")
+        self.setAllShortcuts()
         
         controlMenu.addAction(self.toStartAction)
         controlMenu.addAction(self.fastPrevAction)
@@ -220,6 +221,15 @@ class baseWindow(QMainWindow):
         self.modeLabel = QLabel()
         #self.modeLabel.setAlignment(Qt.AlignLeft)
         self.statusBar().addPermanentWidget(self.modeLabel)
+    
+    def setAllShortcuts(self):
+        self.toStartAction.setShortcuts(QKeySequence(self.settingData.previousToStart))
+        self.fastPrevAction.setShortcuts(QKeySequence(self.settingData.previous10Steps))
+        self.prevAction.setShortcuts(QKeySequence(self.settingData.previousStep))
+        self.nextAction.setShortcuts(QKeySequence(self.settingData.nextStep))
+        self.fastNextAction.setShortcuts(QKeySequence(self.settingData.next10Steps))
+        self.toEndAction.setShortcuts(QKeySequence(self.settingData.nextToEnd))
+        self.backAction.setShortcuts(QKeySequence(self.settingData.back))
     
     def printGo_(self):
         printer = QPrinter()

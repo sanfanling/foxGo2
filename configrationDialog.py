@@ -12,13 +12,13 @@ class configrationDialog(QDialog):
     
     def __init__(self, parent):
         super().__init__()
-        self.parent = parent
         self.setWindowTitle("Configration")
         self.setWindowIcon(QIcon("res/pictures/logo.png"))
         mainLayout = QVBoxLayout(None)
         
-        self.pathBox = pathBox(self)
-        self.optionBox = optionBox(self)
+        self.pathsBox = pathsBox(parent)
+        self.optionsBox = optionsBox(parent)
+        self.shortcutsBox = shortcutsBox(parent)
         
         buttonBox = QDialogButtonBox(self)
         cancelButton = QPushButton("Cancel")
@@ -26,8 +26,9 @@ class configrationDialog(QDialog):
         buttonBox.addButton(cancelButton, QDialogButtonBox.RejectRole)
         buttonBox.addButton(okButton, QDialogButtonBox.AcceptRole)
         
-        mainLayout.addWidget(self.pathBox)
-        mainLayout.addWidget(self.optionBox)
+        mainLayout.addWidget(self.pathsBox)
+        mainLayout.addWidget(self.optionsBox)
+        mainLayout.addWidget(self.shortcutsBox)
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
         
@@ -35,12 +36,12 @@ class configrationDialog(QDialog):
         buttonBox.rejected.connect(self.reject)
 
 
-class pathBox(QGroupBox):
+class pathsBox(QGroupBox):
     
     def __init__(self, parent = None):
         super().__init__()
         self.parent = parent
-        self.setTitle("Path")
+        self.setTitle("Paths")
         self.setAlignment(Qt.AlignHCenter)
         
         mainLayout = QGridLayout(None)
@@ -66,19 +67,45 @@ class pathBox(QGroupBox):
         self.customMusicButton.clicked.connect(self.changeMusic)
         
     def changeSgfPath(self):
-        d = QFileDialog.getExistingDirectory(None, "Choose a directory", os.path.expanduser(self.parent.parent.settingData.sgfPath))
+        d = QFileDialog.getExistingDirectory(None, "Choose a directory", os.path.expanduser(self.parent.settingData.sgfPath))
         self.sgfPath.setText(d)
     
     def changeMusic(self):
-        f, y= QFileDialog.getOpenFileName(None, "Choose a media file", self.parent.parent.settingData.musicPath, "WAV file(*.wav)")
+        f, y= QFileDialog.getOpenFileName(None, "Choose a media file", self.parent.settingData.musicPath, "WAV file(*.wav)")
         self.customMusic.setText(f)
 
-class optionBox(QGroupBox):
+class shortcutsBox(QGroupBox):
     
     def __init__(self, parent = None):
         super().__init__()
         self.parent = parent
-        self.setTitle("Option")
+        self.setTitle("Shortcuts")
+        self.setAlignment(Qt.AlignHCenter)
+                
+        mainLayout = QFormLayout(None)
+        self.previousToStart = QKeySequenceEdit(self.parent.settingData.previousToStart)
+        self.previous10Steps = QKeySequenceEdit(self.parent.settingData.previous10Steps)
+        self.previousStep = QKeySequenceEdit(self.parent.settingData.previousStep)
+        self.nextStep = QKeySequenceEdit(self.parent.settingData.nextStep)
+        self.next10Steps = QKeySequenceEdit(self.parent.settingData.next10Steps)
+        self.nextToEnd = QKeySequenceEdit(self.parent.settingData.nextToEnd)
+        self.back = QKeySequenceEdit(self.parent.settingData.back)
+        mainLayout.addRow("Previous to start:", self.previousToStart)
+        mainLayout.addRow("Previous 10 steps:", self.previous10Steps)
+        mainLayout.addRow("Previous Step:", self.previousStep)
+        mainLayout.addRow("Next step:", self.nextStep)
+        mainLayout.addRow("Next 10 steps:", self.next10Steps)
+        mainLayout.addRow("Next to end:", self.nextToEnd)
+        mainLayout.addRow("Back:", self.back)
+        
+        self.setLayout(mainLayout)
+
+class optionsBox(QGroupBox):
+    
+    def __init__(self, parent = None):
+        super().__init__()
+        self.parent = parent
+        self.setTitle("Options")
         self.setAlignment(Qt.AlignHCenter)
         
         mainLayout = QVBoxLayout(None)
