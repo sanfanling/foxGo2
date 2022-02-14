@@ -70,6 +70,8 @@ class go:
             elif not haveBreath and deadListLen != 0:
                 l, t = self.checkKo(deadList)
                 if not l:
+                    m = "no liberty，but legal move, take!"
+                    self.printMessage(m)
                     self.stepSuccess()
                     chess = self.eatChess(deadList)
                     self.endStepSuccess(self.stepInKo)
