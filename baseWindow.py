@@ -23,14 +23,11 @@ class baseWindow(QMainWindow):
         self.settingData = settingData()
         #self.settingData.getSettingData()
         
-        self.boardSize = self.settingData.boardSize
         self.initDockwidget()
         self.initCentralWidget()
         self.initMenuBar()
         self.initStatusBar()
         
-        
-
         self.board.startPaint.connect(self.removeFromLayout)
         self.board.endPaint.connect(self.addToLayout)
         self.aboutQt.triggered.connect(self.aboutQt_)
@@ -45,16 +42,16 @@ class baseWindow(QMainWindow):
         self.mainLayout.addWidget(self.board)
         self.mainLayout.setAlignment(self.board, Qt.AlignHCenter | Qt.AlignVCenter)
     
-    def __adjustBoardSize(self):
+    def adjustBoardSize(self):
         l = min(self.mainLayout.contentsRect().width(), self.mainLayout.contentsRect().height())
-        cellSize = l // (self.boardSize + 1)
+        cellSize = l // (self.settingData.boardSize + 1)
         if cellSize < 25:
             self.board.setSizePara(25)
         else:
             self.board.setSizePara(cellSize)
         
     def resizeEvent(self, e):
-        self.__adjustBoardSize()
+        self.adjustBoardSize()
     
     def initMenuBar(self):        
         gameMenu = self.menuBar().addMenu("Game(&G)")
@@ -181,9 +178,10 @@ class baseWindow(QMainWindow):
         centralWidget = QWidget()
         self.mainLayout = QVBoxLayout(None)
         self.board = goBoard(self, self.settingData.boardSize)
-        self.__adjustBoardSize()
-        self.board.update()
         self.addToLayout()
+        self.adjustBoardSize()
+        self.board.update()
+        
         centralWidget.setLayout(self.mainLayout)
         self.setCentralWidget(centralWidget)
     

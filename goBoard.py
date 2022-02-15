@@ -77,6 +77,12 @@ class goBoard(QLabel):
     
     def setBoardSize(self, s):
         self.boardSize = s
+        l = min(self.parent.mainLayout.contentsRect().width(), self.parent.mainLayout.contentsRect().height())
+        cellSize = l // (self.boardSize + 1)
+        if cellSize < 25:
+            self.setSizePara(25)
+        else:
+            self.setSizePara(cellSize)
         
     
     def setBoardStyle(self, style):
