@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSoundEffect, QSound
-from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from baseWindow import baseWindow
 from sgfData import sgfData
 import faceDict
