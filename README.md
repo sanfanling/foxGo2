@@ -17,4 +17,4 @@
 * jtauber: provide effecient sgf parser
 * Alice Xu: logo designer
 
-***PLEASE NOTE: the config file in later git version is "./.foxGo2.ini" and default sgf path is source dir***
+***PLEASE NOTE: the config file in later git version is "./.foxGo2.ini" and default sgf path is source dir. Due to updating "recent game" dock, if this dock performs wrong, please del .foxGo2.ini or setting "recentgamesdocktablestate" to "" in ini file***
