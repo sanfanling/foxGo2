@@ -4,3 +4,4 @@
 *.sgf
 *.ini
 lock
+.*.kate-swp
