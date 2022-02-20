@@ -153,16 +153,19 @@ class recentGamesDisplay(QWidget):
         self.parent = parent
         self.downloadSign = False
         self.fileName = None
+        self.downloadList = []
+        self.downloadIndex = 0
         mainLayout = QVBoxLayout(None)
         self.stack = QStackedWidget()
         self.loadingLabel = QLabel("Loading...")
         self.loadingLabel.setAlignment(Qt.AlignHCenter)
-        self.table = QTableWidget(0, 3)
-        self.table.hideColumn(2)
+        self.table = QTableWidget(0, 4)
+        self.table.hideColumn(0)
+        self.table.hideColumn(3)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
-        header = ["Game", "Date", "key"]
+        header = ["Select", "Game", "Date", "key"]
         self.table.setHorizontalHeaderLabels(header)
         self.stack.addWidget(self.loadingLabel)
         self.stack.addWidget(self.table)
@@ -176,7 +179,9 @@ class recentGamesDisplay(QWidget):
         self.viewButton = QPushButton("View")
         self.downButton = QPushButton("Download")
         self.refreshButton = QPushButton("Refresh")
+        self.selectButton = QPushButton("Select")
         buttonLayout.addWidget(self.viewButton)
+        buttonLayout.addWidget(self.selectButton)
         buttonLayout.addWidget(self.downButton)
         buttonLayout.addWidget(self.refreshButton)
                 
@@ -194,44 +199,74 @@ class recentGamesDisplay(QWidget):
         self.viewButton.clicked.connect(self.viewButton_)
         self.sgfThread.missionDone.connect(self.sgfGot)
         self.downButton.clicked.connect(self.downButton_)
+        self.table.activated.connect(self.enableViewButton)
+        self.selectButton.clicked.connect(self.selectButton_)
+    
+    def selectButton_(self):
+        if self.table.isColumnHidden(0):
+            self.table.showColumn(0)
+            self.downButton.setEnabled(True)
+        else:
+            self.table.hideColumn(0)
+            self.downButton.setEnabled(False)
+    
+    def enableViewButton(self):
+        self.viewButton.setEnabled(True)
         
     
     def pageToTable(self, catalog):
-        self.catalog = catalog
-        self.table.setRowCount(len(self.catalog))
+        self.table.setRowCount(len(catalog))
         row = 0
-        for game, date, key in self.catalog:
-            self.table.setItem(row, 0, QTableWidgetItem(game))
-            self.table.setItem(row, 1, QTableWidgetItem(date))
-            self.table.setItem(row, 2, QTableWidgetItem(key))
+        for game, date, key in catalog:
+            self.table.setCellWidget(row, 0, QCheckBox())
+            self.table.setItem(row, 1, QTableWidgetItem(game))
+            self.table.setItem(row, 2, QTableWidgetItem(date))
+            self.table.setItem(row, 3, QTableWidgetItem(key))
             row += 1
         self.stack.setCurrentIndex(1)
-        self.viewButton.setEnabled(True)
-        self.downButton.setEnabled(True)
+        self.viewButton.setEnabled(False)
+        self.downButton.setEnabled(False)
         self.refreshButton.setEnabled(True)
+        self.selectButton.setEnabled(True)
     
     def pageToLabel(self):
         self.stack.setCurrentIndex(0)
         self.viewButton.setEnabled(False)
         self.downButton.setEnabled(False)
         self.refreshButton.setEnabled(False)
+        self.selectButton.setEnabled(False)
         self.catalogThread.start()
     
     def viewButton_(self):
         self.downloadSign = False
-        self.__startThread()
+        row = self.table.currentRow()
+        self.__startThread(row)
     
     def downButton_(self):
         self.downloadSign = True
-        self.__startThread()
+        for i in range(self.table.rowCount()):
+            if self.table.cellWidget(i, 0).isChecked():
+                self.downloadList.append(i)
+                self.table.cellWidget(i, 0).setChecked(False)
+        self.table.hideColumn(0)
+        self.downButton.setEnabled(False)
+        self.downloadInList()
     
-    def __startThread(self):
-        row = self.table.currentRow()
-        self.fileName = self.table.item(row, 0).text().replace("/", "-")
+    def downloadInList(self):
+        if len(self.downloadList) == self.downloadIndex:
+            self.parent.statusBar().showMessage("Download successfule!", 5000)
+            self.downloadList.clear()
+            self.downloadIndex = 0
+        else:
+            item = self.downloadList[self.downloadIndex]
+            self.__startThread(item)
+    
+    def __startThread(self, row):
+        self.fileName = self.table.item(row, 1).text().replace("/", "-")
         if row == -1:
             QMessageBox.warning(self, "Error", "No item is selected, download fail!")
         else:
-            key = self.table.item(row, 2).text()
+            key = self.table.item(row, 3).text()
             self.sgfThread.key = key
             self.sgfThread.start()
     
@@ -241,8 +276,15 @@ class recentGamesDisplay(QWidget):
             if not os.path.exists(p):
                 with open(p, "w") as f:
                     f.write(sgf)
-                self.parent.statusBar().showMessage("Download successfule!", 5000)
                 self.parent.sgfExplorerDock.sgfExplorerDisplay.showItems()
+            else:
+                if not self.parent.settingData.autoSkip:
+                    f, filt= QFileDialog.getSaveFileName(None, "Save as", p, "Go records file(*.sgf)")
+                    if f != "":
+                        with open(f, "w") as fi:
+                            fi.write(sgf)
+            self.downloadIndex += 1
+            self.downloadInList()
         else:
             self.parent.startReviewMode(sgf)
             
@@ -412,6 +454,6 @@ class consoleDisplay(QWidget):
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
-	w = sgfExplorerDisplay()
+	w = recentGamesDisplay(None)
 	w.show()
 	sys.exit(app.exec_())
