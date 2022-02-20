@@ -54,6 +54,9 @@ class mainWindow(baseWindow):
         except:
             pass
         
+        self.intervalTimer = QTimer()
+        self.intervalTimer.setInterval(self.settingData.autoReviewInterval * 1000)
+        
         self.sgfData = sgfData()
         self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
         self.startFreeMode()
@@ -75,6 +78,7 @@ class mainWindow(baseWindow):
         self.stepsNumberCurrent.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberHide.triggered.connect(self.changeStepsNumber_)
         self.settingAction.triggered.connect(self.settingAction_)
+        self.intervalTimer.timeout.connect(self.intervalTimer_)
         self.quit.triggered.connect(self.close)
         
         
@@ -92,8 +96,12 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.toEndButton.clicked.connect(self.toEndAction_)
         self.backAction.triggered.connect(self.backAction_)
         self.controlDock.controlWidget.backButton.clicked.connect(self.backAction_)
+        self.autoReviewAction.triggered.connect(self.autoReviewAction_)
+        self.controlDock.controlWidget.autoReviewAction.triggered.connect(self.autoReviewAction_)
     
     def startFreeMode(self):
+        if self.intervalTimer.isActive():
+            self.intervalTimer.stop()
         self.mode = "free"
         self.modeLabel.setText("Current mode: free")
         self.sgfData.init()
@@ -105,11 +113,15 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.backButton.setEnabled(False)
         self.resignAction.setEnabled(False)
         self.controlDock.controlWidget.resignAction.setEnabled(False)
+        self.autoReviewAction.setEnabled(False)
+        self.controlDock.controlWidget.autoReviewAction.setEnabled(False)
         self.showStepsCount(True)
         self.displayGameInfo()
         self.moveOnBoard()
     
     def startReviewMode(self, sgf):
+        if self.intervalTimer.isActive():
+            self.intervalTimer.stop()
         self.sgfData.init()
         try:
             gameList = self.sgfData.checkSgf(sgf)
@@ -138,6 +150,8 @@ class mainWindow(baseWindow):
             self.saveAs.setEnabled(True)
             self.resignAction.setEnabled(False)
             self.controlDock.controlWidget.resignAction.setEnabled(False)
+            self.autoReviewAction.setEnabled(True)
+            self.controlDock.controlWidget.autoReviewAction.setEnabled(True)
             self.stepPoint = len(self.sgfData.stepsList)
             self.breakPoint = 0
             self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
@@ -147,6 +161,8 @@ class mainWindow(baseWindow):
             self.moveOnBoard()
     
     def startTestMode(self, variation = []):
+        if self.intervalTimer.isActive():
+            self.intervalTimer.stop()
         self.mode = "test"
         self.modeLabel.setText("Current mode: test")
         self.breakPoint = self.stepPoint
@@ -158,6 +174,8 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.backButton.setEnabled(True)
         self.resignAction.setEnabled(False)
         self.controlDock.controlWidget.resignAction.setEnabled(False)
+        self.autoReviewAction.setEnabled(False)
+        self.controlDock.controlWidget.autoReviewAction.setEnabled(False)
         self.moveOnBoard()
     
     def restartFreeAndTestMode(self):
@@ -225,6 +243,21 @@ class mainWindow(baseWindow):
         self.moveOnBoard()
         self.backAction.setEnabled(False)
         self.controlDock.controlWidget.backButton.setEnabled(False)
+        self.autoReviewAction.setEnabled(True)
+        self.controlDock.controlWidget.autoReviewAction.setEnabled(True)
+    
+    def autoReviewAction_(self):
+        if self.intervalTimer.isActive():
+            self.intervalTimer.stop()
+        else:
+            self.toStartAction_()
+            self.intervalTimer.start()
+    
+    def intervalTimer_(self):
+        if self.stepPoint == len(self.sgfData.stepsList):
+            self.intervalTimer.stop()
+        else:
+            self.nextAction_()
     
     def showStepsCount(self, setMaximum = False):
         if setMaximum:
@@ -358,11 +391,13 @@ class mainWindow(baseWindow):
         dialog.pathsBox.sgfPath.setText(self.settingData.sgfPath)
         dialog.pathsBox.customMusic.setText(self.settingData.musicPath)
         dialog.optionsBox.autoSkip.setChecked(self.settingData.autoSkip)
+        dialog.optionsBox.intervalSpinBox.setValue(self.settingData.autoReviewInterval)
         if dialog.exec_() == QDialog.Accepted:
             self.settingData.sgfPath = dialog.pathsBox.sgfPath.text()
             self.sgfExplorerDock.sgfExplorerDisplay.syncPath()
             self.settingData.musicPath = dialog.pathsBox.customMusic.text()
             self.settingData.autoSkip = dialog.optionsBox.autoSkip.isChecked()
+            self.settingData.autoReviewInterval = dialog.optionsBox.intervalSpinBox.value()
             self.settingData.previousToStart = dialog.shortcutsBox.previousToStart.keySequence()
             self.settingData.previous10Steps = dialog.shortcutsBox.previous10Steps.keySequence()
             self.settingData.previousStep = dialog.shortcutsBox.previousStep.keySequence()
@@ -371,6 +406,7 @@ class mainWindow(baseWindow):
             self.settingData.nextToEnd = dialog.shortcutsBox.nextToEnd.keySequence()
             self.settingData.back = dialog.shortcutsBox.back.keySequence()
             self.setAllShortcuts()
+            self.intervalTimer.setInterval(self.settingData.autoReviewInterval * 1000)
     
     def withCoordinate_(self, b):
         self.settingData.withCoordinate = b

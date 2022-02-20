@@ -44,8 +44,10 @@ class controlWidget(QWidget):
         self.backButton = QPushButton("Back")
         self.otherButton = QPushButton("Others")
         otherMenu = QMenu()
+        self.autoReviewAction = QAction("Auto-review")
         self.passAction = QAction("Pass")
         self.resignAction = QAction("Resign")
+        otherMenu.addAction(self.autoReviewAction)
         otherMenu.addAction(self.passAction)
         otherMenu.addAction(self.resignAction)
         self.otherButton.setMenu(otherMenu)
@@ -254,7 +256,7 @@ class recentGamesDisplay(QWidget):
     
     def downloadInList(self):
         if len(self.downloadList) == self.downloadIndex:
-            self.parent.statusBar().showMessage("Download successfule!", 5000)
+            self.parent.statusBar().showMessage("Download mission complete!", 5000)
             self.downloadList.clear()
             self.downloadIndex = 0
         else:

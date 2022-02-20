@@ -126,10 +126,13 @@ class baseWindow(QMainWindow):
         controlMenu.addAction(self.fastNextAction)
         controlMenu.addAction(self.toEndAction)
         controlMenu.addAction(self.backAction)
+        controlMenu.addSeparator()
         
         otherMenu = controlMenu.addMenu("Others")
+        self.autoReviewAction = QAction("Auto-review")
         self.passAction = QAction("Pass")
         self.resignAction = QAction("Resign")
+        otherMenu.addAction(self.autoReviewAction)
         otherMenu.addAction(self.passAction)
         otherMenu.addAction(self.resignAction)
         

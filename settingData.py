@@ -18,6 +18,7 @@ class settingData:
         self.musicPath = self.iniFile.value("/common/musicpath", "./res/sounds/gsls.wav")
         self.effectSounds = self.stringToBool(self.iniFile.value("/common/effectsounds", False))
         self.autoSkip = self.stringToBool(self.iniFile.value("/common/autoskip", True))
+        self.autoReviewInterval = int(self.iniFile.value("/common/autoreviewinterval", 1))
         
         self.boardSize = int(self.iniFile.value("/board/boardsize", 19))
         self.withCoordinate = self.stringToBool(self.iniFile.value("/board/withcoordinate", True))
@@ -57,6 +58,7 @@ class settingData:
         self.iniFile.setValue("/common/musicpath", self.musicPath)
         self.iniFile.setValue("/common/effectsounds", self.effectSounds)
         self.iniFile.setValue("/common/autoskip", self.autoSkip)
+        self.iniFile.setValue("/common/autoreviewinterval", self.autoReviewInterval)
         
         self.iniFile.setValue("/board/boardsize", self.boardSize)
         self.iniFile.setValue("/board/withcoordinate", self.withCoordinate)
