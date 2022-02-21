@@ -8,7 +8,7 @@
 ### Run:
 * navigate to source dir in console and type: `python foxGo2.py` in console to run the application
 * or directly click `foxGo2.py` to run
-* the application is being developed in Linux environment, not sure if it could run in windows
+* the application is being developed in Linux environment, after several hours testing in windows,it performs as good as in Linux
 
 ### Author:
 * sanfanling (xujia19@outlook.com)
