@@ -45,6 +45,7 @@ class controlWidget(QWidget):
         self.otherButton = QPushButton("Others")
         otherMenu = QMenu()
         self.autoReviewAction = QAction("Auto-review")
+        self.autoReviewAction.setCheckable(True)
         self.passAction = QAction("Pass")
         self.resignAction = QAction("Resign")
         otherMenu.addAction(self.autoReviewAction)

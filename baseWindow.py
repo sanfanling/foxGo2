@@ -22,7 +22,6 @@ class baseWindow(QMainWindow):
         self.setWindowIcon(QIcon("res/pictures/logo.png"))
         
         self.settingData = settingData()
-        #self.settingData.getSettingData()
         
         self.initDockwidget()
         self.initCentralWidget()
@@ -130,6 +129,7 @@ class baseWindow(QMainWindow):
         
         otherMenu = controlMenu.addMenu("Others")
         self.autoReviewAction = QAction("Auto-review")
+        self.autoReviewAction.setCheckable(True)
         self.passAction = QAction("Pass")
         self.resignAction = QAction("Resign")
         otherMenu.addAction(self.autoReviewAction)

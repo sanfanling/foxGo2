@@ -96,12 +96,14 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.toEndButton.clicked.connect(self.toEndAction_)
         self.backAction.triggered.connect(self.backAction_)
         self.controlDock.controlWidget.backButton.clicked.connect(self.backAction_)
-        self.autoReviewAction.triggered.connect(self.autoReviewAction_)
-        self.controlDock.controlWidget.autoReviewAction.triggered.connect(self.autoReviewAction_)
+        self.autoReviewAction.toggled.connect(self.autoReviewAction_)
+        self.controlDock.controlWidget.autoReviewAction.toggled.connect(self.autoReviewAction_)
     
     def startFreeMode(self):
         if self.intervalTimer.isActive():
             self.intervalTimer.stop()
+            self.autoReviewAction.setChecked(False)
+            self.controlDock.controlWidget.autoReviewAction.setChecked(False)
         self.mode = "free"
         self.modeLabel.setText("Current mode: free")
         self.sgfData.init()
@@ -122,6 +124,8 @@ class mainWindow(baseWindow):
     def startReviewMode(self, sgf):
         if self.intervalTimer.isActive():
             self.intervalTimer.stop()
+            self.autoReviewAction.setChecked(False)
+            self.controlDock.controlWidget.autoReviewAction.setChecked(False)
         self.sgfData.init()
         try:
             gameList = self.sgfData.checkSgf(sgf)
@@ -163,6 +167,8 @@ class mainWindow(baseWindow):
     def startTestMode(self, variation = []):
         if self.intervalTimer.isActive():
             self.intervalTimer.stop()
+            self.autoReviewAction.setChecked(False)
+            self.controlDock.controlWidget.autoReviewAction.setChecked(False)
         self.mode = "test"
         self.modeLabel.setText("Current mode: test")
         self.breakPoint = self.stepPoint
@@ -246,8 +252,10 @@ class mainWindow(baseWindow):
         self.autoReviewAction.setEnabled(True)
         self.controlDock.controlWidget.autoReviewAction.setEnabled(True)
     
-    def autoReviewAction_(self):
-        if self.intervalTimer.isActive():
+    def autoReviewAction_(self, checked):
+        self.autoReviewAction.setChecked(checked)
+        self.controlDock.controlWidget.autoReviewAction.setChecked(checked)
+        if not checked:
             self.intervalTimer.stop()
         else:
             self.toStartAction_()
@@ -256,6 +264,8 @@ class mainWindow(baseWindow):
     def intervalTimer_(self):
         if self.stepPoint == len(self.sgfData.stepsList):
             self.intervalTimer.stop()
+            self.autoReviewAction.setChecked(False)
+            self.controlDock.controlWidget.autoReviewAction.setChecked(False)
         else:
             self.nextAction_()
     
