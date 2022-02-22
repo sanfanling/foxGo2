@@ -123,7 +123,9 @@ class sgfExplorerDisplay(QWidget):
         for i in glob.glob(os.path.join(self.sgfPath, "*.sgf")):
             baseName, fileName = os.path.split(i)
             if t in fileName:
-                self.explorer.addTopLevelItem(QTreeWidgetItem([fileName]))
+                item = QTreeWidgetItem([fileName])
+                item.setToolTip(0, fileName)
+                self.explorer.addTopLevelItem(item)
     
     def showSelectedSgfFile(self, w):
         try:
@@ -202,7 +204,7 @@ class recentGamesDisplay(QWidget):
         self.viewButton.clicked.connect(self.viewButton_)
         self.sgfThread.missionDone.connect(self.sgfGot)
         self.downButton.clicked.connect(self.downButton_)
-        self.table.activated.connect(self.enableViewButton)
+        self.table.itemSelectionChanged.connect(self.enableViewButton)
         self.selectButton.clicked.connect(self.selectButton_)
     
     def selectButton_(self):
@@ -222,7 +224,9 @@ class recentGamesDisplay(QWidget):
         row = 0
         for game, date, key in catalog:
             self.table.setCellWidget(row, 0, QCheckBox())
-            self.table.setItem(row, 1, QTableWidgetItem(game))
+            item = QTableWidgetItem(game)
+            item.setToolTip(game)
+            self.table.setItem(row, 1, item)
             self.table.setItem(row, 2, QTableWidgetItem(date))
             self.table.setItem(row, 3, QTableWidgetItem(key))
             row += 1
