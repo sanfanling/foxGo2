@@ -110,12 +110,14 @@ class optionsBox(QGroupBox):
         
         mainLayout = QVBoxLayout(None)
         self.autoSkip = QCheckBox("Auto skip when sgf file exists")
+        self.acceptDragDrop = QCheckBox("Accept drag & drop sgf file")
         intervalLayout = QFormLayout(None)
         self.intervalSpinBox = QSpinBox(None)
         self.intervalSpinBox.setMinimum(1)
         self.intervalSpinBox.setMaximum(10)
         intervalLayout.addRow("Auto-review interval (seconds):", self.intervalSpinBox)
         mainLayout.addWidget(self.autoSkip)
+        mainLayout.addWidget(self.acceptDragDrop)
         mainLayout.addLayout(intervalLayout)
         self.setLayout(mainLayout)
 

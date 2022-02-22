@@ -401,12 +401,14 @@ class mainWindow(baseWindow):
         dialog.pathsBox.sgfPath.setText(self.settingData.sgfPath)
         dialog.pathsBox.customMusic.setText(self.settingData.musicPath)
         dialog.optionsBox.autoSkip.setChecked(self.settingData.autoSkip)
+        dialog.optionsBox.acceptDragDrop.setChecked(self.settingData.acceptDragDrop)
         dialog.optionsBox.intervalSpinBox.setValue(self.settingData.autoReviewInterval)
         if dialog.exec_() == QDialog.Accepted:
             self.settingData.sgfPath = dialog.pathsBox.sgfPath.text()
             self.sgfExplorerDock.sgfExplorerDisplay.syncPath()
             self.settingData.musicPath = dialog.pathsBox.customMusic.text()
             self.settingData.autoSkip = dialog.optionsBox.autoSkip.isChecked()
+            self.settingData.acceptDragDrop = dialog.optionsBox.acceptDragDrop.isChecked()
             self.settingData.autoReviewInterval = dialog.optionsBox.intervalSpinBox.value()
             self.settingData.previousToStart = dialog.shortcutsBox.previousToStart.keySequence()
             self.settingData.previous10Steps = dialog.shortcutsBox.previous10Steps.keySequence()
@@ -417,6 +419,7 @@ class mainWindow(baseWindow):
             self.settingData.back = dialog.shortcutsBox.back.keySequence()
             self.setAllShortcuts()
             self.intervalTimer.setInterval(self.settingData.autoReviewInterval * 1000)
+            self.setAcceptDrops(self.settingData.acceptDragDrop)
     
     def withCoordinate_(self, b):
         self.settingData.withCoordinate = b
