@@ -12,7 +12,7 @@ import faceDict
 from goEngine import go
 from configrationDialog import configrationDialog
 
-import sys, os
+import sys, os, re
 
 class mainWindow(baseWindow):
     
@@ -373,11 +373,12 @@ class mainWindow(baseWindow):
             with open(fileName) as f:
                 self.startReviewMode(f.read())
     def saveAs_(self):
-        t = self.sgfData.title.replace("/", "-")
+        t = re.sub(r'[\\/:*?"<>|\r\n]+', "_", self.sgfData.title)
         f, filt= QFileDialog.getSaveFileName(None, "Save as", os.path.join(self.settingData.sgfPath, t), "Go records file(*.sgf)")
-        with open(f, "w") as fi:
-            fi.write(self.sgfData.data)
-        self.sgfExplorerDock.sgfExplorerDisplay.showItems()
+        if f:
+            with open(f, "w") as fi:
+                fi.write(self.sgfData.data)
+            self.sgfExplorerDock.sgfExplorerDisplay.showItems()
                 
     def size9_(self):
         self.changeBoardSize_(9)

@@ -3,7 +3,7 @@
 # filename: customDock.py 
 
 
-import os, sys
+import os, sys, re
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -269,7 +269,7 @@ class recentGamesDisplay(QWidget):
             self.__startThread(item)
     
     def __startThread(self, row):
-        self.fileName = self.table.item(row, 1).text().replace("/", "-")
+        self.fileName = re.sub(r'[\\/:*?"<>|\r\n]+', "_", self.table.item(row, 1).text())
         if row == -1:
             QMessageBox.warning(self, "Error", "No item is selected, download fail!")
         else:
