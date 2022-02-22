@@ -20,6 +20,7 @@ class baseWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("foxGo2")
         self.setWindowIcon(QIcon("res/pictures/logo.png"))
+        self.setAcceptDrops(True)
         
         self.settingData = settingData()
         

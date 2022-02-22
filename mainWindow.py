@@ -451,6 +451,17 @@ class mainWindow(baseWindow):
         if e.modifiers() == Qt.ControlModifier and e.key() == Qt.Key_F:
             self.controlDock.controlWidget.stepsCount.selectAll()
     
+    def dragEnterEvent(self, ev):
+        urls = ev.mimeData().urls()
+        if len(urls) == 1 and os.path.splitext(urls[0].toLocalFile())[1] == ".sgf":
+            ev.acceptProposedAction()
+    
+    def dropEvent(self, ev):
+        filename = ev.mimeData().urls()[0].toLocalFile()
+        with open(filename, "r") as f:
+            sgf = f.read()
+        self.startReviewMode(sgf)
+    
     def closeEvent(self, e):
         #os.remove("./lock")
         self.settingData.windowState = self.saveState()
