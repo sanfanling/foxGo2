@@ -129,7 +129,7 @@ class sgfExplorerDisplay(QWidget):
     
     def showSelectedSgfFile(self, w):
         try:
-            with open(os.path.join(self.sgfPath, w.text(0))) as f:
+            with open(os.path.join(self.sgfPath, w.text(0)), "r", encoding = "utf8") as f:
                 sgf = f.read()
         except FileNotFoundError:
             QMessageBox.critical(self, "Open file error", "The selected file does not exists!")
@@ -281,14 +281,14 @@ class recentGamesDisplay(QWidget):
         if self.downloadSign:
             p = os.path.join(self.parent.settingData.sgfPath, "{}.sgf".format(self.fileName))
             if not os.path.exists(p):
-                with open(p, "w") as f:
+                with open(p, "w", encoding = "utf8") as f:
                     f.write(sgf)
                 self.parent.sgfExplorerDock.sgfExplorerDisplay.showItems()
             else:
                 if not self.parent.settingData.autoSkip:
                     f, filt= QFileDialog.getSaveFileName(None, "Save as", p, "Go records file(*.sgf)")
                     if f != "":
-                        with open(f, "w") as fi:
+                        with open(f, "w", encoding = "utf8") as fi:
                             fi.write(sgf)
             self.downloadIndex += 1
             self.downloadInList()

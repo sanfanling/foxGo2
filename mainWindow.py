@@ -370,13 +370,13 @@ class mainWindow(baseWindow):
     def fileOpen_(self):
         fileName, y= QFileDialog.getOpenFileName(None, "Open a SGF file", self.settingData.sgfPath, "Go records file(*.sgf)")
         if fileName:
-            with open(fileName) as f:
+            with open(fileName, 'r', encoding = "utf8") as f:
                 self.startReviewMode(f.read())
     def saveAs_(self):
         t = re.sub(r'[\\/:*?"<>|\r\n]+', "_", self.sgfData.title)
         f, filt= QFileDialog.getSaveFileName(None, "Save as", os.path.join(self.settingData.sgfPath, t), "Go records file(*.sgf)")
         if f:
-            with open(f, "w") as fi:
+            with open(f, "w", encoding = "utf8") as fi:
                 fi.write(self.sgfData.data)
             self.sgfExplorerDock.sgfExplorerDisplay.showItems()
                 
@@ -462,7 +462,7 @@ class mainWindow(baseWindow):
     
     def dropEvent(self, ev):
         filename = ev.mimeData().urls()[0].toLocalFile()
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding = "utf8") as f:
             sgf = f.read()
         self.startReviewMode(sgf)
     
