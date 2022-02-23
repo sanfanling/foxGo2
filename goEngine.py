@@ -21,7 +21,7 @@ class go:
     def getHaSteps(self, haList):
         for i in haList:
             #self.haDict[i] = ("black", 0)
-            c = i.coordinate()
+            c = i.getCoordinate()
             self.haDict[c] = ("black", 0)
         
     # this function is called in review mode, usually, every step in review mode is legal move
