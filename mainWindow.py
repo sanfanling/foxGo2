@@ -294,11 +294,11 @@ class mainWindow(baseWindow):
         moveSuccess = 0
         deadChessNum = 0
         if len(tmpList) != 0:
-            for i, c, x, y in tmpList:
-                self.thisGame.stepNum = i
-                self.thisGame.goColor = c
-                self.thisGame.x = x
-                self.thisGame.y = y
+            for i in tmpList:
+                self.thisGame.stepNum = i.getStepNum()
+                self.thisGame.goColor = i.getColor()
+                self.thisGame.x = i.getCoordinateX()
+                self.thisGame.y = i.getCoordinateY()
                 moveSuccess, deadChessNum = self.thisGame.makeStepSafe()
             self.thisGame.changeColor()
             self.makeSound(moveSuccess, deadChessNum)
@@ -308,14 +308,14 @@ class mainWindow(baseWindow):
         
         self.commentsDock.commentsDisplay.clear()
         if self.mode == "review" and self.stepPoint != 0:
-            com = self.sgfData.stepsMap[self.stepPoint - 1].comment
-            if com != None:
+            com = self.sgfData.stepsList[self.stepPoint - 1].comment
+            if com != "":
                 com = com.replace("\n", "<br>")
                 
                 self.commentsDock.commentsDisplay.insertHtml(self.faceConvert(com))
                 
             
-            var = self.sgfData.stepsMap[self.stepPoint - 1].variations
+            var = self.sgfData.stepsList[self.stepPoint - 1].variations
             if var != []:
                 self.commentsDock.commentsDisplay.moveCursor(QTextCursor.End)
                 self.commentsDock.commentsDisplay.insertHtml(self.formatVariation())
@@ -333,17 +333,17 @@ class mainWindow(baseWindow):
         point, num = name.split("-")
         point = int(point)
         num = int(num)
-        l = self.sgfData.stepsMap[point - 1].variations[num - 1]
-        vl = self.sgfData.parseStepsMap(l)
-        self.startTestMode(vl)
+        l = self.sgfData.stepsList[point - 1].variations[num - 1]
+        #vl = self.sgfData.parseStepsMap(l)
+        self.startTestMode(l)
         self.showStepsCount(True)
     
     def formatVariation(self):
         p = 0
         text = "<br><br>"
-        for i in self.sgfData.stepsMap[self.stepPoint - 1].variations:
+        for i in self.sgfData.stepsList[self.stepPoint - 1].variations:
             p += 1
-            co = i[0].comment
+            co = i[0].getComment()
             url = "{}-{}".format(self.stepPoint, p)
             title = "Variation: {}: ".format(url)
             text += '<a href="{}">{}</a> {}<br>'.format(url, title, co)

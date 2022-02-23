@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from goEngine import go
+from sgfData import step
 
 class container(QMainWindow):
     
@@ -113,7 +114,8 @@ class goBoard(QLabel):
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
             moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
             if moveSuccess:
-                self.parent.sgfData.stepsList.append((self.parent.thisGame.stepNum, self.parent.thisGame.goColor, self.parent.thisGame.x, self.parent.thisGame.y))
+                oneStep = step((self.parent.thisGame.x, self.parent.thisGame.y), self.parent.thisGame.goColor, self.parent.thisGame.stepNum)
+                self.parent.sgfData.stepsList.append(oneStep)
                 self.parent.thisGame.changeColor()
                 self.parent.stepPoint += 1
                 self.parent.showStepsCount(True)
@@ -125,7 +127,8 @@ class goBoard(QLabel):
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
             moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
             if moveSuccess:
-                self.parent.sgfData.stepsList.append((self.parent.thisGame.stepNum, self.parent.thisGame.goColor, self.parent.thisGame.x, self.parent.thisGame.y))
+                oneStep = step((self.parent.thisGame.x, self.parent.thisGame.y), self.parent.thisGame.goColor, self.parent.thisGame.stepNum)
+                self.parent.sgfData.stepsList.append(oneStep)
                 self.parent.thisGame.changeColor()
                 self.parent.stepPoint += 1
                 self.parent.showStepsCount(True)
@@ -137,7 +140,8 @@ class goBoard(QLabel):
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
             moveSuccess, deadChessNum = self.parent.thisGame.makeStep()
             if moveSuccess:
-                self.parent.sgfData.stepsList.append((self.parent.thisGame.stepNum, self.parent.thisGame.goColor, self.parent.thisGame.x, self.parent.thisGame.y))
+                oneStep = step((self.parent.thisGame.x, self.parent.thisGame.y), self.parent.thisGame.goColor, self.parent.thisGame.stepNum)
+                self.parent.sgfData.stepsList.append(oneStep)
                 self.parent.thisGame.changeColor()
                 self.parent.stepPoint += 1
                 self.parent.showStepsCount(True)
