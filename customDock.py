@@ -319,6 +319,7 @@ class infoDisplay(QWidget):
         self.gameLabel = QLabel("-")
         self.gameLabel.setAlignment(Qt.AlignCenter)
         self.gameLabel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.gameLabel.setWordWrap(True)
         self.gameLabel.setStyleSheet("QLabel {font-weight: bold; font-size: 15px}")
         
         playerLayout = QHBoxLayout(None)
