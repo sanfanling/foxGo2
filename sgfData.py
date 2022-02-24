@@ -1,7 +1,7 @@
 #!/bin/use/python
 
 
-import sgf
+from sgf import sgf
 
 
 class sgfData:
