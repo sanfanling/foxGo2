@@ -39,12 +39,6 @@ class sgfData:
         self.ha = self.head["HA"][0]
         self.timeLimit = self.head["TM"][0]
         self.stepsList, self.haList = self.parseSteps(self.rest, False)
-        #self.haList = self.parseHaSteps(self.rest)
-        #self.stepsList = self.parseStepsMap(self.stepsMap, False)
-        #self.haList = self.parseStepsMap(self.haMap, True)
-        #print(self.haList)
-        #print()
-        #print(self.stepsList)
             
         
     def init(self):
@@ -92,30 +86,6 @@ class sgfData:
             stepNum += 1
         return stepsList, haList
     
-    #def parseHaSteps(self, iterator):
-        #haMap = []
-        #for i in iterator:
-            #if "AB" in i.properties:
-                #for j in i.properties["AB"]:
-                    #haStep = step(False)
-                    #haStep.color = "black"
-                    #haStep.coordinate = j
-                    #haMap.append(haStep)
-        #return haMap
-    
-    #def parseStepsMap(self, stepsMap, isHaMap = False):
-        #stepNum = 1
-        #stepsList = []
-        #for i in stepsMap:
-            #x = ord(i.coordinate[0]) - 96
-            #y = ord(i.coordinate[1]) - 96
-            #if not isHaMap:
-                #stepsList.append((stepNum, i.color, x, y))
-            #else:
-                #stepsList.append((x, y))
-            #stepNum += 1
-        #return stepsList
-    
     def recursionNode(self, node, var):
         var.append(node)
         node = node.next
@@ -130,7 +100,60 @@ class sgfData:
         y = ord(t[1]) - 96
         return (x, y)
                     
+
+class writeSgf:
+    
+    def __init__(self, fileName):
+        self.fileName = fileName
         
+    def generateRoot(self, sz, gn, dt, pb, pw, br, wr, km, ha, ru, re, tm, tc, tt):
+        root = "(;GM[1]FF[4]\nSZ[{}]\nGN[{}]\nDT[{}]\nPB[{}]\nPW[{}]\nBR[{}]\nWR[{}]\nKM[{}]HA[{}]RU[{}]RE[{}]TM[{}]TC[{}]TT[{}]AP[foxGo2]RL[0]\n".format(sz, gn, dt, pb, pw, br, wr, km, ha, ru, re, tm, tc, tt)
+        return root
+    
+    def generateRest(self, stepsList):
+        main = ""
+        var = ""
+        main += self.parseStep(stepsList, True)
+        for i in stepsList:
+            if i.hasVariation():
+                v = ""
+                for j in i.getVariations():
+                    b = "(" + self.parseStep(j, False) + ")\n"
+                    v += b
+                v += ")\n"
+                var = v + var
+        return main + var
+    
+    def toFile(self, sgf):
+        with open(self.fileName, "w", encoding = "utf8") as f:
+            f.write(sgf)
+                    
+    def parseStep(self, it, isMain):
+        b = ""
+        if isMain:
+            bre = "\n"
+        else:
+            bre = ""
+        for i in it:
+            if i.getColor() == "black":
+                c = "B"
+            else:
+                c = "W"
+            coordinate = self.goToSgfCoordinate(i.getCoordinate())
+            if i.hasComment():
+                pha = ";{}[{}]C[{}]{}".format(c, coordinate, i.getComment(), bre)
+            else:
+                pha = ";{}[{}]{}".format(c, coordinate, bre)
+            if i.hasVariation():
+                pha += "("
+            b += pha
+        return b
+    
+    def goToSgfCoordinate(self, tu):
+        chx = chr(tu[0] + 96)
+        chy = chr(tu[1] + 96)
+        return chx + chy
+
 
 class step:
     
