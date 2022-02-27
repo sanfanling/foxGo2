@@ -38,6 +38,8 @@ class sgfData:
         self.rule = self.head["RU"][0]
         self.ha = self.head["HA"][0]
         self.timeLimit = self.head["TM"][0]
+        self.countTimes = self.head["TC"][0]
+        self.countSeconds = self.head["TT"][0]
         self.stepsList, self.haList = self.parseSteps(self.rest, False)
             
         
@@ -106,47 +108,61 @@ class writeSgf:
     def __init__(self, fileName):
         self.fileName = fileName
         
-    def generateRoot(self, sz, gn, dt, pb, pw, br, wr, km, ha, ru, re, tm, tc, tt):
-        root = "(;GM[1]FF[4]\nSZ[{}]\nGN[{}]\nDT[{}]\nPB[{}]\nPW[{}]\nBR[{}]\nWR[{}]\nKM[{}]HA[{}]RU[{}]RE[{}]TM[{}]TC[{}]TT[{}]AP[foxGo2]RL[0]\n".format(sz, gn, dt, pb, pw, br, wr, km, ha, ru, re, tm, tc, tt)
+    def generateRoot(self, sz, gn, dt, pb, pw, br, wr, km, ha, ru, rs, tm, tc, tt):
+        root = "(;GM[1]FF[4]\nSZ[{}]\nGN[{}]\nDT[{}]\nPB[{}]\nPW[{}]\nBR[{}]\nWR[{}]\nKM[{}]HA[{}]RU[{}]RE[{}]TM[{}]TC[{}]TT[{}]AP[foxGo2]RL[0]\n".format(sz, gn, dt, pb, pw, br, wr, km, ha, ru, rs, tm, tc, tt)
         return root
     
-    def generateRest(self, stepsList):
-        main = ""
+    def generateRest(self, stepsList, haList):
+        main = self.parseStep(stepsList, True, False)
+        ha = self.parseStep(haList, True, True)
         var = ""
-        main += self.parseStep(stepsList, True)
         for i in stepsList:
             if i.hasVariation():
                 v = ""
                 for j in i.getVariations():
-                    b = "(" + self.parseStep(j, False) + ")\n"
+                    b = "(" + self.parseStep(j, False) + ")"
                     v += b
                 v += ")\n"
                 var = v + var
-        return main + var
+        return ha + main + var
     
     def toFile(self, sgf):
         with open(self.fileName, "w", encoding = "utf8") as f:
             f.write(sgf)
                     
-    def parseStep(self, it, isMain):
+    def parseStep(self, it, isMain, isHa = False):
         b = ""
-        if isMain:
-            bre = "\n"
+        
+        if isHa:
+            if len(it) == 0:
+                return b
+            else:
+                for i in it:
+                    coordinate = self.goToSgfCoordinate(i.getCoordinate())
+                    pha = "[{}]".format(coordinate)
+                    b += pha
+                b = ";AB" + b + "\n"
+            
         else:
-            bre = ""
-        for i in it:
-            if i.getColor() == "black":
-                c = "B"
+            if isMain:
+                bre = "\n"
             else:
-                c = "W"
-            coordinate = self.goToSgfCoordinate(i.getCoordinate())
-            if i.hasComment():
-                pha = ";{}[{}]C[{}]{}".format(c, coordinate, i.getComment(), bre)
-            else:
-                pha = ";{}[{}]{}".format(c, coordinate, bre)
-            if i.hasVariation():
-                pha += "("
-            b += pha
+                bre = ""
+            for i in it:
+                if i.getColor() == "black":
+                    c = "B"
+                else:
+                    c = "W"
+                coordinate = self.goToSgfCoordinate(i.getCoordinate())
+                if i.hasComment():
+                    pha = ";{}[{}]C[{}]{}".format(c, coordinate, i.getComment(), bre)
+                else:
+                    pha = ";{}[{}]{}".format(c, coordinate, bre)
+                if i.hasVariation():
+                    pha += "("
+                b += pha
+            if isMain:
+                b += ")"
         return b
     
     def goToSgfCoordinate(self, tu):

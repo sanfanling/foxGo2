@@ -12,7 +12,7 @@ import faceDict
 from goEngine import go
 from customDialog import *
 
-import sys, os, re
+import sys, os, re, time
 
 class mainWindow(baseWindow):
     
@@ -387,6 +387,57 @@ class mainWindow(baseWindow):
         #root = a.generateRoot()
         #rest = a.generateRest(self.sgfData.stepsList)
         #a.toFile(root + rest)
+        
+        dialog = rootDialog(self)
+        if self.mode == "review":
+            dialog.playerInfoBox.pbLine.setText(self.sgfData.blackPlayer)
+            dialog.playerInfoBox.brLine.setText(self.sgfData.blackPlayerLevel)
+            dialog.playerInfoBox.pwLine.setText(self.sgfData.whitePlayer)
+            dialog.playerInfoBox.wrLine.setText(self.sgfData.whitePlayerLevel)
+            dialog.gameInfoBox.gnLine.setText(self.sgfData.title)
+            y, m, d = self.sgfData.date.split("-")
+            dialog.gameInfoBox.dtLine.setDate(QDate(int(y), int(m), int(d)))
+            dialog.gameInfoBox.kmLine.setText(str(int(float(self.sgfData.komi) * 100)))
+            dialog.gameInfoBox.haLine.setValue(len(self.sgfData.haList))
+            if self.sgfData.rule == "Chinese" or self.sgfData.rule == "Japanese" or self.sgfData.rule == "Ying's":
+                dialog.gameInfoBox.ruLine.setCurrentText(self.sgfData.rule)
+            else:
+                dialog.gameInfoBox.ruLine.setCurrentText("Others")
+            dialog.gameInfoBox.rsLine.setText(self.sgfData.result)
+            dialog.gameInfoBox.tmLine.setText(self.sgfData.timeLimit)
+            dialog.gameInfoBox.tcLine.setValue(int(self.sgfData.countTimes))
+            dialog.gameInfoBox.ttLine.setText(self.sgfData.countSeconds)
+        else:
+            y, m, d = time.localtime()[0:3]
+            dialog.gameInfoBox.dtLine.setDate(QDate(y, m, d))
+            dialog.gameInfoBox.kmLine.setText("375")
+            dialog.gameInfoBox.haLine.setValue(len(self.sgfData.haList))
+            dialog.gameInfoBox.tmLine.setText("7200")
+            dialog.gameInfoBox.tcLine.setValue(5)
+            dialog.gameInfoBox.ttLine.setText("60")
+        if dialog.exec_() == QDialog.Accepted:
+            t = re.sub(r'[\\/:*?"<>|\r\n]+', "_", self.sgfData.title)
+            f, filt= QFileDialog.getSaveFileName(None, "Save as", os.path.join(self.settingData.sgfPath, t), "Go records file(*.sgf)")
+            if f:
+                a = writeSgf(f)
+                sz = self.settingData.boardSize
+                gn = dialog.gameInfoBox.gnLine.text()
+                dt = dialog.gameInfoBox.dtLine.date().toString("yyyy-MM-dd")
+                pb = dialog.playerInfoBox.pbLine.text()
+                pw = dialog.playerInfoBox.pwLine.text()
+                br = dialog.playerInfoBox.brLine.text()
+                wr = dialog.playerInfoBox.wrLine.text()
+                km = dialog.gameInfoBox.kmLine.text()
+                ha = dialog.gameInfoBox.haLine.value()
+                ru = dialog.gameInfoBox.ruLine.currentText()
+                rs = dialog.gameInfoBox.rsLine.text()
+                tm = dialog.gameInfoBox.tmLine.text()
+                tc = dialog.gameInfoBox.tcLine.value()
+                tt = dialog.gameInfoBox.ttLine.text()
+                
+                root = a.generateRoot(sz, gn, dt, pb, pw, br, wr, km, ha, ru, rs, tm, tc, tt)
+                rest = a.generateRest(self.sgfData.stepsList, self.sgfData.haList)
+                a.toFile(root + rest)
         
                 
     def size9_(self):
