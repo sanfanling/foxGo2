@@ -6,12 +6,15 @@
 
 
 from PyQt5.QtCore import QSettings
+import os.path
 
 
 class settingData:
     
     def __init__(self):
-        self.iniFile = QSettings("./.foxGo2.ini", QSettings.IniFormat)
+        configPath = os.path.join(os.path.expanduser("~"), ".foxGo2.conf")
+        self.iniFile = QSettings(configPath, QSettings.IniFormat)
+        
         
         self.sgfPath = self.iniFile.value("/common/sgfpath", ".")
         self.backgroundMusic = self.stringToBool(self.iniFile.value("/common/backgroundmusic", False))
