@@ -9,6 +9,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from customThread import getCatalogThread, getSgfThread
 import glob
+from editCommentsDialog import editCommentsDialog
+from faceDict import faceDict_anti
 
 
 
@@ -162,8 +164,10 @@ class recentGamesDisplay(QWidget):
         self.downloadIndex = 0
         mainLayout = QVBoxLayout(None)
         self.stack = QStackedWidget()
-        self.loadingLabel = QLabel("Loading...")
-        self.loadingLabel.setAlignment(Qt.AlignHCenter)
+        self.loadingLabel = QLabel()
+        self.loadingLabel.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        movie = QMovie("res/pictures/waiting.gif")
+        self.loadingLabel.setMovie(movie)
         self.table = QTableWidget(0, 4)
         self.table.hideColumn(0)
         self.table.hideColumn(3)
@@ -220,6 +224,7 @@ class recentGamesDisplay(QWidget):
         
     
     def pageToTable(self, catalog):
+        self.loadingLabel.movie().stop()
         self.table.setRowCount(len(catalog))
         row = 0
         for game, date, key in catalog:
@@ -242,6 +247,7 @@ class recentGamesDisplay(QWidget):
         self.downButton.setEnabled(False)
         self.refreshButton.setEnabled(False)
         self.selectButton.setEnabled(False)
+        self.loadingLabel.movie().start()
         self.catalogThread.start()
     
     def viewButton_(self):
@@ -406,23 +412,6 @@ class infoDisplay(QWidget):
         mainLayout.addStretch(0)
         self.setLayout(mainLayout)
         
-        
-class commentsDock(QDockWidget):
-    
-    def __init__(self, title, parent):
-        super().__init__(title)
-        try:
-            self.restorGeometry(parent.settingData.commentsDockGeometry)
-        except:
-            pass
-        self.parent = parent
-        self.commentsDisplay = QTextBrowser()
-        self.commentsDisplay.setOpenLinks(False)
-        self.setWidget(self.commentsDisplay)
-        self.setFloating(False)
-        
-        self.commentsDisplay.anchorClicked.connect(self.parent.showVariation)
-
 
 class consoleDock(QDockWidget):
     
@@ -457,11 +446,66 @@ class consoleDisplay(QWidget):
     
     def addOutput(self, sender, m):
         self.console.append("[{}] {}".format(sender, m))
+
+
+
+class commentsDock(QDockWidget):
+    
+    def __init__(self, title, parent):
+        super().__init__(title)
+        try:
+            self.restorGeometry(parent.settingData.commentsDockGeometry)
+        except:
+            pass
+        self.parent = parent
+        self.commentsDisplay = commentsDisplay(parent)
+        self.setWidget(self.commentsDisplay)
+        self.setFloating(False)
         
+        self.commentsDisplay.commentsBox.anchorClicked.connect(self.parent.showVariation)
+    
+class commentsDisplay(QWidget):
+        
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        mainLayout = QVBoxLayout(None)
+        self.commentsBox = QTextBrowser()
+        self.commentsBox.setOpenLinks(False)
+        
+        buttonLayout = QHBoxLayout(None)
+        self.insertVariation = QPushButton("Insert variation...")
+        self.editCommentButton = QPushButton("Edit comments...")
+        buttonLayout.addStretch()
+        buttonLayout.addWidget(self.editCommentButton)
+        buttonLayout.addWidget(self.insertVariation)
+        
+        mainLayout.addWidget(self.commentsBox)
+        mainLayout.addLayout(buttonLayout)
+        
+        self.setLayout(mainLayout)
+        self.editCommentButton.clicked.connect(self.showEditCommentsDialog)
+        
+    def showEditCommentsDialog(self):
+        dialog = editCommentsDialog(self)
+        dialog.commentsBox.setHtml(self.commentsBox.toHtml())
+        if dialog.exec_() == QDialog.Accepted:
+            b = dialog.commentsBox.toHtml()
+            b = b.replace("\n", "").replace("</p></body></html>", "")
+            text = re.sub('^<.*">', "", b, re.S)
+            text = text.replace("<br />", "\n")
+            for i in faceDict_anti:
+                pha = '<img src="res/face/{}" />'.format(i)
+                if  pha in text:
+                    text = text.replace(pha, faceDict_anti[i])
+            self.parent.setComment(text)
+            self.parent.showComment()
+                
+
 
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
-	w = recentGamesDisplay(None)
+	w = faceDisplay(None)
 	w.show()
 	sys.exit(app.exec_())
