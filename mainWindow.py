@@ -8,9 +8,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSoundEffect, QSound
 from baseWindow import baseWindow
 from sgfData import *
-import faceDict
+from faceDict import faceDict
 from goEngine import go
-from customDialog import *
+from otherDialog import *
+from configrationDialog import configrationDialog
 
 import sys, os, re, time
 
@@ -240,7 +241,7 @@ class mainWindow(baseWindow):
     
     def backAction_(self):
         self.mode = "review"
-        self.commentsDock.commentsDisplay.clear()
+        self.commentsDock.commentsDisplay.commentsBox.clear()
         self.modeLabel.setText("Current mode: Review")
         self.sgfData.stepsList = self.stepsListTmp
         self.stepPoint = self.breakPoint
@@ -308,30 +309,32 @@ class mainWindow(baseWindow):
         else:
             self.thisGame.goColor = "black"
         self.board.update()
-        
-        self.commentsDock.commentsDisplay.clear()
+        self.showComment()
+    
+    def setComment(self, co):
+        self.sgfData.stepsList[self.stepPoint - 1].comment = co
+    
+    def showComment(self):
+        self.commentsDock.commentsDisplay.commentsBox.clear()
         if self.mode == "review" and self.stepPoint != 0:
             com = self.sgfData.stepsList[self.stepPoint - 1].comment
             if com != "":
                 com = com.replace("\n", "<br>")
-                
-                self.commentsDock.commentsDisplay.insertHtml(self.faceConvert(com))
-                
-            
+                self.commentsDock.commentsDisplay.commentsBox.insertHtml(self.faceConvert(com))
             var = self.sgfData.stepsList[self.stepPoint - 1].variations
             if var != []:
-                self.commentsDock.commentsDisplay.moveCursor(QTextCursor.End)
-                self.commentsDock.commentsDisplay.insertHtml(self.formatVariation())
+                self.commentsDock.commentsDisplay.commentsBox.moveCursor(QTextCursor.End)
+                self.commentsDock.commentsDisplay.commentsBox.insertHtml(self.formatVariation())
         
     def faceConvert(self, c):
-        for i in faceDict.faceDict:
+        for i in faceDict:
             if i in c:
-                c = c.replace(i, "<img src='res/face/{}'/>".format(faceDict.faceDict[i]))
+                c = c.replace(i, "<img src='res/face/{}'/>".format(faceDict[i]))
         return c
         
     
     def showVariation(self, link):
-        self.commentsDock.commentsDisplay.clear()
+        self.commentsDock.commentsDisplay.commentsBox.clear()
         name = link.fileName().strip()
         point, num = name.split("-")
         point = int(point)
