@@ -488,11 +488,13 @@ class commentsDisplay(QWidget):
         
     def showEditCommentsDialog(self):
         dialog = editCommentsDialog(self)
-        dialog.commentsBox.setHtml(self.commentsBox.toHtml())
+        p = self.commentsBox.toHtml()
+        p = re.sub("<br /><br /><a href.*</html>", "", p, re.S)
+        dialog.commentsBox.setHtml(p)
         if dialog.exec_() == QDialog.Accepted:
             b = dialog.commentsBox.toHtml()
             b = b.replace("\n", "").replace("</p></body></html>", "")
-            text = re.sub('^<.*">', "", b, re.S)
+            text = re.sub('^<.*px;">', "", b, re.S)
             text = text.replace("<br />", "\n")
             for i in faceDict_anti:
                 pha = '<img src="res/face/{}" />'.format(i)
