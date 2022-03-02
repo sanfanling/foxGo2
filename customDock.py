@@ -504,7 +504,10 @@ class commentsDisplay(QWidget):
         if dialog.exec_() == QDialog.Accepted:
             b = dialog.commentsBox.toHtml()
             b = b.replace("\n", "").replace("</p></body></html>", "")
-            text = re.sub('^<.*px;">', "", b, re.S)
+            text = re.sub('^<.*?px;">', "", b, re.S)
+            text = re.sub('<p.*?px;">', "", text, re.S)
+            text = text.replace("</p>", "\n")
+            print(text)
             text = text.replace("<br />", "\n")
             for i in faceDict_anti:
                 pha = '<img src="res/face/{}" />'.format(i)
