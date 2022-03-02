@@ -507,7 +507,6 @@ class commentsDisplay(QWidget):
             text = re.sub('^<.*?px;">', "", b, re.S)
             text = re.sub('<p.*?px;">', "", text, re.S)
             text = text.replace("</p>", "\n")
-            print(text)
             text = text.replace("<br />", "\n")
             for i in faceDict_anti:
                 pha = '<img src="res/face/{}" />'.format(i)
