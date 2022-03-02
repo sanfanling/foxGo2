@@ -476,17 +476,27 @@ class commentsDisplay(QWidget):
         buttonLayout = QHBoxLayout(None)
         self.insertVariation = QPushButton("Insert variation...")
         self.editCommentButton = QPushButton("Edit comments...")
+        self.delVariation = QPushButton("Del variation...")
         buttonLayout.addStretch()
         buttonLayout.addWidget(self.editCommentButton)
         buttonLayout.addWidget(self.insertVariation)
+        buttonLayout.addWidget(self.delVariation)
+        buttonLayout.addStretch()
         
         mainLayout.addWidget(self.commentsBox)
         mainLayout.addLayout(buttonLayout)
         
         self.setLayout(mainLayout)
         self.editCommentButton.clicked.connect(self.showEditCommentsDialog)
+        self.insertVariation.clicked.connect(self.showInsertVariation)
+        self.delVariation.clicked.connect(self.showDelVariation)
+    
+    def showDelVariation(self):
+        self.parent.statusBar().showMessage("This function is not finished", 5000)
         
     def showEditCommentsDialog(self):
+        if not self.checkEditCommentsConditions():
+            return
         dialog = editCommentsDialog(self)
         p = self.commentsBox.toHtml()
         p = re.sub("<br /><br /><a href.*</html>", "", p, re.S)
@@ -502,8 +512,48 @@ class commentsDisplay(QWidget):
                     text = text.replace(pha, faceDict_anti[i])
             self.parent.setComment(text)
             self.parent.showComment()
-                
-
+    
+    def showInsertVariation(self):
+        if not self.checkInsertVariationConditions():
+            return
+        variation = self.parent.sgfData.stepsList[self.parent.breakPoint : self.parent.stepPoint]
+        text, ok = QInputDialog.getText(None, "Insert variation successfully", "Please input short comments for the variation")
+        if ok:
+            variation[0].comment = text
+            self.parent.sgfData.stepsList[self.parent.breakPoint - 1].variations.append(variation)
+            self.parent.statusBar().showMessage("Variation inserted successfully!", 5000)
+    
+    def checkEditCommentsConditions(self):
+        if self.parent.mode == "review":
+            if len(self.parent.sgfData.stepsList) != 0:
+                return True
+            else:
+                QMessageBox.information(self, "Can not eidt comments", "There is no stone on board currently")
+                return False
+        elif self.parent.mode == "free":
+            if len(self.parent.sgfData.stepsList) != 0:
+                return True
+            else:
+                QMessageBox.information(self, "Can not eidt comments", "There is no stone on board currently")
+                return False
+        elif self.parent.mode == "test":
+            QMessageBox.information(self, "Can not eidt comments", "Can not edit comments under test mode")
+            return False
+    
+    def checkInsertVariationConditions(self):
+        if self.parent.mode == "test":
+            if self.parent.stepPoint - self.parent.breakPoint > 0:
+                if self.parent.breakPoint == 0:
+                    QMessageBox.information(self, "Can not insert variation", "Variation follows sgf mainline steps only")
+                    return False
+                else:
+                    return True
+            else:
+                QMessageBox.information(self, "Can not insert variation", "There is no variation on board")
+                return False
+        else:
+            QMessageBox.information(self, "Can not insert variation", "This function is available only under test mode")
+            return False
 
 
 if __name__ == "__main__":

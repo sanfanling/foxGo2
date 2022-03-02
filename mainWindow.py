@@ -63,6 +63,7 @@ class mainWindow(baseWindow):
         self.startFreeMode()
         
         self.fastNewGame.triggered.connect(self.startFreeMode)
+        self.newGame.triggered.connect(self.newGame_)
         self.fileOpen.triggered.connect(self.fileOpen_)
         self.saveAsAction.triggered.connect(self.saveAsAction_)
         self.withCoordinate.toggled.connect(self.withCoordinate_)
@@ -372,6 +373,8 @@ class mainWindow(baseWindow):
         self.effectEquipment.setSource(QUrl.fromLocalFile(soundFile))
         self.effectEquipment.play()
         
+    def newGame_(self):
+        self.statusBar().showMessage("This function is not finished", 5000)
     
     def fileOpen_(self):
         fileName, y= QFileDialog.getOpenFileName(None, "Open a SGF file", self.settingData.sgfPath, "Go records file(*.sgf)")
@@ -441,6 +444,7 @@ class mainWindow(baseWindow):
                 root = a.generateRoot(sz, gn, dt, pb, pw, br, wr, km, ha, ru, rs, tm, tc, tt)
                 rest = a.generateRest(self.sgfData.stepsList, self.sgfData.haList)
                 a.toFile(root + rest)
+                self.sgfExplorerDock.sgfExplorerDisplay.showItems()
         
                 
     def size9_(self):
