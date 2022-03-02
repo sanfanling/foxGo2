@@ -66,9 +66,10 @@ class faceDisplay(QScrollArea):
         self.setFixedSize(510, 250)
     
     def event(self, e):
-        if QEvent.WindowDeactivate == e.type():
-            self.close()
-        return QWidget.event(self, e)
+        if e.type() == 2:
+            if self != QApplication.activeWindow():
+                self.close()
+        return QScrollArea.event(self, e)
         
 
 class faceContainer(QWidget):
