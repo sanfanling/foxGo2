@@ -263,7 +263,7 @@ class baseWindow(QMainWindow):
         QMessageBox.aboutQt(self, "About Qt")
     
     def aboutApp_(self):
-        QMessageBox.about(self, "About foxGo2", "2nd generation of foxGo, with new interface and experience. Enjoy go's magic with foxGo2!")
+        QMessageBox.about(self, "About foxGo2", "2nd generation of foxGo, with new interface and experience. Enjoy go's magic with foxGo2!\n\nAuthor: sanfanling\nE-mail: xujia19@outlook.com")
 
 
 if __name__ == "__main__":
