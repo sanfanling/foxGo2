@@ -521,6 +521,7 @@ class mainWindow(baseWindow):
     def keyPressEvent(self, e):
         if e.modifiers() == Qt.ControlModifier and e.key() == Qt.Key_F:
             self.controlDock.controlWidget.stepsCount.selectAll()
+            self.controlDock.controlWidget.stepsCount.setFocus(Qt.ShortcutFocusReason)
     
     def dragEnterEvent(self, ev):
         urls = ev.mimeData().urls()
