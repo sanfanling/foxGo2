@@ -263,7 +263,7 @@ class baseWindow(QMainWindow):
         QMessageBox.aboutQt(self, "About Qt")
     
     def aboutApp_(self):
-        QMessageBox.about(self, "About foxGo2", "2nd generation of foxGo, with new interface and experience. Enjoy go's magic with foxGo2!\n\nAuthor: sanfanling\nE-mail: xujia19@outlook.com")
+        QMessageBox.about(self, "About foxGo2", "2nd generation of foxGo, with new interface and better experience.\nSupport importing/exporting sgf file\nSupport foxWeiqi fast view\nSupport face system\nSupport editing comments\nSupport all-size board(9, 13, 19)\n\nAuthor: sanfanling\nE-mail: xujia19@outlook.com")
 
 
 if __name__ == "__main__":
