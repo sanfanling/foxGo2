@@ -9,12 +9,10 @@ class go:
     def init(self, boardSize = 19):
         self.boardSize = boardSize
         self.stepsGoDict = {} #records any existed chesses on board, with chess color info, can append and remove step
-        self.shapeSet = set()
         self.haDict = {} # records the steps of ha
         self.shapeList = [] # for checking the rule of global same shape forbidden, ko is a subset of this rule
         self.stepNum = 0
         self.goColor = "black"
-        self.stepInKo = False
         self.x = 0
         self.y = 0
     
@@ -30,12 +28,12 @@ class go:
         deadListLen = len(deadList)
         if deadListLen == 0:
             self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
-            #self.endStepSuccess(False)
+            self.endStepSuccess()
             return (1, 0)
         else:
             self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
             chess = self.eatChess(deadList)
-            #self.endStepSuccess(False)
+            self.endStepSuccess()
             return (2, chess)
     
     def makeStepPass(self):
@@ -50,45 +48,32 @@ class go:
             if haveBreath and deadListLen == 0:
                 m = "has liberty, legal move!"
                 self.printMessage(m)
-                self.stepInKo = False
                 self.stepSuccess()
-                self.endStepSuccess(self.stepInKo)
-                #self.changeColor()
+                self.endStepSuccess()
                 return (1, 0)
             elif haveBreath and deadListLen != 0:
                 m = "has liberty, legal move, take!"
                 self.printMessage(m)
-                #print(deadList)
-                self.stepInKo = False
                 self.stepSuccess()
                 chess = self.eatChess(deadList)
-                self.endStepSuccess(self.stepInKo)
-                #self.changeColor()
+                self.endStepSuccess()
                 return (2, chess)
             elif not haveBreath and deadListLen == 0:
                 m = "no libery, no take, illegal move!"
                 self.printMessage(m)
                 return (0, 0)
             elif not haveBreath and deadListLen != 0:
-                l, t = self.checkKo(deadList)
-                if not l:
+                if not self.checkKo(deadList):
                     m = "no liberty，but legal move, take!"
                     self.printMessage(m)
                     self.stepSuccess()
                     chess = self.eatChess(deadList)
-                    self.endStepSuccess(self.stepInKo)
-                    #self.changeColor()
+                    self.endStepSuccess()
                     return (2, chess)
                 else:
-                    if t == 1:
-                        m = "it's a ko, illegal move!"
-                    elif t == 2:
-                        m = "it's a triple-circle ko, illegal move! Advise: draw game!"
-                    else:
-                        m = "it's a miracle ko, illegal move! Advise: draw game!"
+                    m = "it's a ko, illegal move!"
                     self.printMessage(m)
                     return (0, 0)
-        
         else:
             m = "position has been taken, can not move here"
             self.printMessage(m)
@@ -97,14 +82,12 @@ class go:
     def stepSuccess(self):
         self.stepNum += 1
         self.stepsGoDict[(self.x, self.y)] = (self.goColor, self.stepNum)
-        self.shapeSet.add("{},{},{}".format(self.x, self.y, self.goColor))
-        
     
-    def endStepSuccess(self, stepInKo):
-        v = self.shapeSet.copy()
-        if not stepInKo:
-            del self.shapeList[:-1]
-        self.shapeList.append(v)
+    def endStepSuccess(self):
+        if self.goColor == "black":
+            self.stepsGoEasy_blackTmp = list(self.stepsGoDict.keys())
+        else:
+            self.stepsGoEasy_whiteTmp = list(self.stepsGoDict.keys())
     
     def changeColor(self):
         if self.goColor == "black":
@@ -115,35 +98,32 @@ class go:
     def eatChess(self, deadChessList):
         p = 0
         for j in deadChessList:
-            x, y = j
-            c = self.stepsGoDict[j][0]
-            self.shapeSet.discard("{},{},{}".format(x, y, c))
             del self.stepsGoDict[j]
-            
             p += 1
-        
         return p
             
     def checkKo(self, deadList):
         if len(deadList) != 1:
-            self.stepInKo = False
-            return False, 0
+            return False
         else:
-            tmp = self.shapeSet.copy()
-            tmp.add("{},{},{}".format(self.x, self.y, self.goColor))
-            x, y = deadList[0]
-            c = self.stepsGoDict[deadList[0]][0]
-            tmp.discard("{},{},{}".format(x, y, c))
-            if tmp in self.shapeList:
-                if tmp == self.shapeList[-2]:
-                    return True, 1
-                elif tmp == self.shapeList[-6]:
-                    return True, 2
+            stepsGoEasyTmp = list(self.stepsGoDict.keys())
+            stepsGoEasyTmp.append((self.x, self.y))
+            stepsGoEasyTmp.remove(deadList[0])
+            
+            if self.goColor == "black":
+                stepsGoEasyTmp.sort()
+                self.stepsGoEasy_blackTmp.sort()
+                if stepsGoEasyTmp == self.stepsGoEasy_blackTmp:
+                    return True
                 else:
-                    return True, 3
+                    return False
             else:
-                self.stepInKo = True
-                return False, 0
+                stepsGoEasyTmp.sort()
+                self.stepsGoEasy_whiteTmp.sort()
+                if stepsGoEasyTmp == self.stepsGoEasy_whiteTmp:
+                    return True
+                else:
+                    return False
     
     def printMessage(self, m):
         if __name__ == "main":
