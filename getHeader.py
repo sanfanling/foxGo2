@@ -5,15 +5,15 @@
 import sys, os, re
 from urllib import request
 
-global koreaName
+global kojpNames
 
-koreaName = {"변상일":"卞相壹", "신진서":"申真谞", "최정":"崔精", "김은지":"金恩持", "서봉수":"徐奉洙", "이창석":"李昌锡", "김채영":"金彩瑛", "김혜민":"金惠敏", "오유진":"吴侑珍", "강동윤":"姜东润"}
+kojpNames = {"변상일":"卞相壹", "신진서":"申真谞", "최정":"崔精", "김은지":"金恩持", "서봉수":"徐奉洙", "이창석":"李昌锡", "김채영":"金彩瑛", "김혜민":"金惠敏", "오유진":"吴侑珍", "강동윤":"姜东润", "牛栄子":"牛荣子", "許家元":"许家元"}
 
 class getHeader:
 
     def __init__(self, name):
-        if name in koreaName:
-            self.name = koreaName[name]
+        if name in kojpNames:
+            self.name = kojpNames[name]
         else:
             self.name = name
         self.fileName = name

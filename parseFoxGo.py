@@ -14,7 +14,7 @@ class parseFoxGo:
         pass
         
     def getCatalog(self):
-        baseUrl = "https://weiqi.qq.com/qipu/index/p/"
+        baseUrl = "https://www.foxwq.com/qipu/index/p/"
         source = []
         page = ""
         for i in range(1, 5):
@@ -32,7 +32,7 @@ class parseFoxGo:
         return source
 
     def getSgf(self, key):
-        url = "https://weiqi.qq.com/qipu/newlist/id/{}.html".format(key)
+        url = "https://www.foxwq.com/qipu/newlist/id/{}.html".format(key)
         req = request.urlopen(url)
         page = req.read().decode("utf8")
         req.close()
