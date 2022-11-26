@@ -15,6 +15,8 @@
 
 ### Thanks to:
 * jtauber: provide effecient sgf parser
+* foxwq: sgf files provider
+* sinago: player headers provider
 * Alice Xu: logo designer
 
 ***PLEASE NOTE: the config file in later git version is moved to "$HOME/.foxGo2.conf"***
