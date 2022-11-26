@@ -12,6 +12,7 @@ from faceDict import faceDict
 from goEngine import go
 from otherDialog import *
 from configrationDialog import configrationDialog
+from getHeaderThread import getHeaderThread
 
 import sys, os, re, time
 
@@ -62,6 +63,9 @@ class mainWindow(baseWindow):
         self.stepsListTmp = []  # it's a tmp list, storing the main steps data when entering test mode or variation from review mode
         self.startFreeMode()
         
+        self.getkHeader = getHeaderThread()
+        
+        self.getkHeader.missionDone.connect(self.displayHeader)
         self.fastNewGame.triggered.connect(self.startFreeMode)
         self.newGame.triggered.connect(self.newGame_)
         self.fileOpen.triggered.connect(self.fileOpen_)
@@ -122,7 +126,7 @@ class mainWindow(baseWindow):
         self.autoReviewAction.setEnabled(False)
         self.controlDock.controlWidget.autoReviewAction.setEnabled(False)
         self.showStepsCount(True)
-        self.displayGameInfo()
+        self.displayGameInfo("freeMode")
         self.moveOnBoard()
     
     def startReviewMode(self, sgf):
@@ -164,7 +168,7 @@ class mainWindow(baseWindow):
             self.breakPoint = 0
             self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
             self.controlDock.controlWidget.stepsSlider.setRange(0, self.stepPoint)
-            self.displayGameInfo()
+            self.displayGameInfo("reviewMode")
             self.showStepsCount()
             self.moveOnBoard()
     
@@ -281,7 +285,7 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.stepsCount.setValue(self.stepPoint - self.breakPoint)
         self.controlDock.controlWidget.stepsSlider.setValue(self.stepPoint - self.breakPoint)
     
-    def displayGameInfo(self):
+    def displayGameInfo(self, mode):
         self.infoDock.infoDisplay.gameLabel.setText(self.sgfData.title)
         self.infoDock.infoDisplay.blackPlayer.setText("{} {}".format(self.sgfData.blackPlayer, self.sgfData.blackPlayerLevel))
         self.infoDock.infoDisplay.whitePlayer.setText("{} {}".format(self.sgfData.whitePlayer, self.sgfData.whitePlayerLevel))
@@ -291,7 +295,24 @@ class mainWindow(baseWindow):
         self.infoDock.infoDisplay.dateValue.setText(self.sgfData.date)
         self.infoDock.infoDisplay.resultValue.setText(self.sgfData.result)
         self.infoDock.infoDisplay.timeLimitValue.setText(self.sgfData.timeLimit)
+        self.displayHeader()
+        if mode == "reviewMode":
+            self.getkHeader.setArgs([self.sgfData.blackPlayer, self.sgfData.whitePlayer])
+            self.getkHeader.start()
     
+    def displayHeader(self):
+        if os.path.exists(f"headers/{self.sgfData.blackPlayer}.jpg"):
+            photoSheet = f"min-width: 100px; max-width: 100px; min-height: 100px; max-height: 100px; border-radius: 50px; border-width: 0 0 0 0; border-image: url(headers/{self.sgfData.blackPlayer}.jpg) 0 0 0 0 stretch strectch;"
+        else:
+            photoSheet = "min-width: 100px; max-width: 100px; min-height: 100px; max-height: 100px; border-radius: 50px; border-width: 0 0 0 0; border-image: url(headers/blank.png) 0 0 0 0 stretch strectch;"
+        self.infoDock.infoDisplay.blackPhoto.setStyleSheet(photoSheet)
+            
+        if os.path.exists(f"headers/{self.sgfData.whitePlayer}.jpg"):
+            photoSheet = f"min-width: 100px; max-width: 100px; min-height: 100px; max-height: 100px; border-radius: 50px; border-width: 0 0 0 0; border-image: url(headers/{self.sgfData.whitePlayer}.jpg) 0 0 0 0 stretch strectch;"
+        else:
+            photoSheet = "min-width: 100px; max-width: 100px; min-height: 100px; max-height: 100px; border-radius: 50px; border-width: 0 0 0 0; border-image: url(headers/blank.png) 0 0 0 0 stretch strectch;"
+        self.infoDock.infoDisplay.whitePhoto.setStyleSheet(photoSheet)
+        
     def moveOnBoard(self):
         self.thisGame.stepsGoDict.clear()
         self.thisGame.stepsGoDict.update(self.thisGame.haDict)

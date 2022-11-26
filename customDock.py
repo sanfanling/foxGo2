@@ -339,8 +339,9 @@ class infoDisplay(QWidget):
         self.blackPlayer.setAlignment(Qt.AlignCenter)
         self.blackPhoto = QLabel()
         self.blackPhoto.setAlignment(Qt.AlignCenter)
-        pix = QPixmap("res/pictures/blank.png").scaled(100, 100, 0, 1)
-        self.blackPhoto.setPixmap(pix)
+        photoSheet = "min-width: 100px; max-width: 100px; min-height: 100px; max-height: 100px; border-radius: 50px; border-width: 0 0 0 0; border-image: url(headers/blank.png) 0 0 0 0 stretch strectch;"
+        self.blackPhoto.setStyleSheet(photoSheet)
+        
         blackLayout.addWidget(self.blackLabel)
         blackLayout.addWidget(self.blackPlayer)
         blackLayout.addWidget(self.blackPhoto)
@@ -354,7 +355,8 @@ class infoDisplay(QWidget):
         self.whitePlayer.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.whitePhoto = QLabel()
         self.whitePhoto.setAlignment(Qt.AlignCenter)
-        self.whitePhoto.setPixmap(pix)
+        self.whitePhoto.setStyleSheet(photoSheet)
+        
         whiteLayout.addWidget(self.whiteLabel)
         whiteLayout.addWidget(self.whitePlayer)
         whiteLayout.addWidget(self.whitePhoto)

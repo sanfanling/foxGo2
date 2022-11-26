@@ -5,3 +5,4 @@
 *.ini
 lock
 .*.kate-swp
+headers/*.jpg
