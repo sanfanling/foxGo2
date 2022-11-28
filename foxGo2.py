@@ -11,11 +11,11 @@ import sys, os
 if __name__ == "__main__":
     
     app = QApplication(sys.argv)
-    if os.path.exists("lock"):
+    if os.path.exists("lockFile"):
         QMessageBox.information(None, "Notice", "Only one foxGo2 instance allowed running at once!")
         sys.exit()
     else:
-        #f = open(lockFile, 'w')
+        #f = open("lockFile", 'w')
         #f.close()
         w = mainWindow()
         w.show()
