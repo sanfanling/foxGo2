@@ -77,6 +77,7 @@ class controlWidget(QWidget):
         
         self.stepsCount.editingFinished.connect(self.parent.gotoSpecifiedStep)
         self.stepsSlider.valueChanged.connect(self.stepsCount.setValue)
+        self.stepsSlider.valueChanged.connect(self.parent.gotoSpecifiedStep)
         self.stepsSlider.sliderReleased.connect(self.parent.gotoSpecifiedStep)
         
 class sgfExplorerDock(QDockWidget):
