@@ -35,9 +35,10 @@ class settingData:
         self.infoDockGeometry = self.iniFile.value("/session/infodockgeometry", "")
         self.controlDockGeometry = self.iniFile.value("/session/controldockgeometry", "")
         self.consoleDockGeometry = self.iniFile.value("/session/consoledockgeometry", "")
-        self.sgfExplorerDockGeometry = self.iniFile.value("s/ession/sgfexplorerdockgeometry", "")
+        self.sgfExplorerDockGeometry = self.iniFile.value("/ession/sgfexplorerdockgeometry", "")
         self.recentGamesDockGeometry = self.iniFile.value("/session/recentgamesdockgeometry", "")
         self.recentGamesDockTableState = self.iniFile.value("/session/recentgamesdocktablestate", "")
+        self.searchHistory  = self.iniFile.value("/session/searchhistory", "LG|三星|春兰|农心|应氏").split("|")
         
         self.previousToStart = self.iniFile.value("/shortcuts/previoustostart")
         self.previous10Steps = self.iniFile.value("/shortcuts/previous10Steps")
@@ -79,6 +80,7 @@ class settingData:
         self.iniFile.setValue("/session/sgfexplorerdockgeometry", self.sgfExplorerDockGeometry)
         self.iniFile.setValue("/session/recentgamesdockgeometry", self.recentGamesDockGeometry)
         self.iniFile.setValue("/session/recentgamesdocktablestate", self.recentGamesDockTableState)
+        self.iniFile.setValue("/session/searchhistory", "|".join(self.searchHistory))
         
         self.iniFile.setValue("/shortcuts/previoustostart", self.previousToStart)
         self.iniFile.setValue("/shortcuts/previous10Steps", self.previous10Steps)

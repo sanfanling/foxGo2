@@ -13,6 +13,45 @@ from editCommentsDialog import editCommentsDialog
 from faceDict import faceDict_anti
 
 
+class QLineEditWithHistory(QLineEdit):
+    
+    def __init__(self, historyList):
+        super().__init__()
+        self.searchHistoryList = historyList
+        self.setPlaceholderText("Press Enter to record to history")
+        self.completer = QCompleter(self)
+        self.listModel = QStringListModel(self.searchHistoryList, self)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
+        self.completer.setModel(self.listModel)
+        self.setCompleter(self.completer)
+        
+        self.returnPressed.connect(self.addItemInHistory)
+        self.completer.activated.connect(self.popupFinished)
+    
+    def addItemInHistory(self):
+        content = self.text().strip()
+        if content != "" and content not in self.searchHistoryList:
+            self.searchHistoryList.insert(0, content)
+            self.searchHistoryList = self.searchHistoryList[:10]
+            self.listModel.setStringList(self.searchHistoryList)
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+    
+    def popupFinished(self, text):
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+    
+    def event(self, event):
+        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Tab:
+            self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+            self.completer.complete()
+            self.completer.popup().show()
+            return True
+        return super().event(event)
+    
+    def mousePressEvent(self, event):
+        if event.buttons () == Qt.LeftButton:
+            self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+            self.completer.complete()
+            self.completer.popup().show()
 
 
 class controlDock(QDockWidget):
@@ -77,7 +116,6 @@ class controlWidget(QWidget):
         
         self.stepsCount.editingFinished.connect(self.parent.gotoSpecifiedStep)
         self.stepsSlider.valueChanged.connect(self.stepsCount.setValue)
-        self.stepsSlider.valueChanged.connect(self.parent.gotoSpecifiedStep)
         self.stepsSlider.sliderReleased.connect(self.parent.gotoSpecifiedStep)
         
 class sgfExplorerDock(QDockWidget):
@@ -103,7 +141,7 @@ class sgfExplorerDisplay(QWidget):
         
         searchLayout = QHBoxLayout(None)
         self.filterLabel = QLabel("Search:")
-        self.filterLine = QLineEdit()
+        self.filterLine = QLineEditWithHistory(self.parent.settingData.searchHistory)
         self.filterLine.setClearButtonEnabled(True)
         searchLayout.addWidget(self.filterLabel)
         searchLayout.addWidget(self.filterLine)
@@ -387,6 +425,7 @@ class infoDisplay(QWidget):
         ruleLayout.addWidget(self.ruleValue)
         
         dateLayout = QHBoxLayout(None)
+        dateLayout.setContentsMargins(0, 20, 0, 0)
         self.dateLabel = QLabel("DATE:")
         self.dateValue = QLabel("-")
         dateLayout.addWidget(self.dateLabel)

@@ -20,7 +20,6 @@ class mainWindow(baseWindow):
     
     def __init__(self):
         super().__init__()
-        
         self.thisGame = go(self)
         self.thisGame.init(self.settingData.boardSize)
         
@@ -393,6 +392,8 @@ class mainWindow(baseWindow):
                     soundFile = "res/sounds/103.wav"
         self.effectEquipment.setSource(QUrl.fromLocalFile(soundFile))
         self.effectEquipment.play()
+        
+        
         
     def newGame_(self):
         self.statusBar().showMessage("This function is not finished", 5000)
