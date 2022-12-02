@@ -58,11 +58,9 @@ class baseWindow(QMainWindow):
     
     def initMenuBar(self):        
         gameMenu = self.menuBar().addMenu("Game(&G)")
-        self.fastNewGame = QAction("Fast new")
         self.newGame = QAction("New...")
         self.fileOpen = QAction("Open...")
         self.saveAsAction = QAction("Save as...")
-        gameMenu.addAction(self.fastNewGame)
         gameMenu.addAction(self.newGame)
         gameMenu.addAction(self.fileOpen)
         gameMenu.addAction(self.saveAsAction)

@@ -65,8 +65,7 @@ class mainWindow(baseWindow):
         self.getkHeader = getHeaderThread()
         
         self.getkHeader.missionDone.connect(self.displayHeader)
-        self.fastNewGame.triggered.connect(self.startFreeMode)
-        self.newGame.triggered.connect(self.newGame_)
+        self.newGame.triggered.connect(self.startFreeMode)
         self.fileOpen.triggered.connect(self.fileOpen_)
         self.saveAsAction.triggered.connect(self.saveAsAction_)
         self.withCoordinate.toggled.connect(self.withCoordinate_)
@@ -125,7 +124,7 @@ class mainWindow(baseWindow):
         self.autoReviewAction.setEnabled(False)
         self.controlDock.controlWidget.autoReviewAction.setEnabled(False)
         self.showStepsCount(True)
-        self.displayGameInfo("freeMode")
+        self.displayGameInfo()
         self.moveOnBoard()
     
     def startReviewMode(self, sgf):
@@ -167,7 +166,7 @@ class mainWindow(baseWindow):
             self.breakPoint = 0
             self.controlDock.controlWidget.stepsCount.setRange(0, self.stepPoint)
             self.controlDock.controlWidget.stepsSlider.setRange(0, self.stepPoint)
-            self.displayGameInfo("reviewMode")
+            self.displayGameInfo()
             self.showStepsCount()
             self.moveOnBoard()
     
@@ -284,7 +283,7 @@ class mainWindow(baseWindow):
         self.controlDock.controlWidget.stepsCount.setValue(self.stepPoint - self.breakPoint)
         self.controlDock.controlWidget.stepsSlider.setValue(self.stepPoint - self.breakPoint)
     
-    def displayGameInfo(self, mode):
+    def displayGameInfo(self):
         self.infoDock.infoDisplay.gameLabel.setText(self.sgfData.title)
         self.infoDock.infoDisplay.blackPlayer.setText("{} {}".format(self.sgfData.blackPlayer, self.sgfData.blackPlayerLevel))
         self.infoDock.infoDisplay.whitePlayer.setText("{} {}".format(self.sgfData.whitePlayer, self.sgfData.whitePlayerLevel))
@@ -295,7 +294,7 @@ class mainWindow(baseWindow):
         self.infoDock.infoDisplay.resultValue.setText(self.sgfData.result)
         self.infoDock.infoDisplay.timeLimitValue.setText(self.sgfData.timeLimit)
         self.displayHeader()
-        if mode == "reviewMode":
+        if self.sgfData.blackPlayer != "-" and self.sgfData.whitePlayer != "-":
             self.getkHeader.setArgs([self.sgfData.blackPlayer, self.sgfData.whitePlayer])
             self.getkHeader.start()
     
@@ -392,11 +391,6 @@ class mainWindow(baseWindow):
                     soundFile = "res/sounds/103.wav"
         self.effectEquipment.setSource(QUrl.fromLocalFile(soundFile))
         self.effectEquipment.play()
-        
-        
-        
-    def newGame_(self):
-        self.statusBar().showMessage("This function is not finished", 5000)
     
     def fileOpen_(self):
         fileName, y= QFileDialog.getOpenFileName(None, "Open a SGF file", self.settingData.sgfPath, "Go records file(*.sgf)")
