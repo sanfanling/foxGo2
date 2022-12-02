@@ -3,7 +3,7 @@
 # filename: getHeader.py
 
 import sys, os, re
-from urllib import request
+import requests
 from kojpNames import kojpNames
 
 
@@ -23,21 +23,26 @@ class getHeader:
         if name == "-" or name == "":
             return None
         for i in range(1, 4):
-            url = "http://sinago.com/info/china_player.asp?ntn={}".format(i)
-            req = request.urlopen(url)
-            page = req.read().decode("gbk")
-            req.close()
-            if name + "</a>" in page:
-                k = re.search("goGamer.*?" + name, page)[0]
+            url = f"http://sinago.com/info/china_player.asp?ntn={i}"
+            res = requests.get(url)
+            res.encoding = "gbk"
+            page = res.text
+            res.close()
+            try:
+                k = re.search(f"goGamer.*?>{name}</a></div>", page)[0]
                 index = int(re.search("\'.*?\'", k)[0].replace("\'", ""))
+            except:
+                return None
+            else:
                 return self.__checkHaveHeader(index)
         return None
 
     def __checkHaveHeader(self, index):
         url = "http://sinago.com/info/china_player_history.asp?gno={}&ggrade=39&ntn=1".format(index)
-        req = request.urlopen(url)
-        page = req.read().decode("gbk")
-        req.close()
+        res = requests.get(url)
+        res.encoding = "gbk"
+        page = res.text
+        res.close()
         p = re.findall("gsphoto.*?jpg", page)
         if len(p) == 0:
             return None
