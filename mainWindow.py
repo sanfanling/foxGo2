@@ -181,7 +181,7 @@ class mainWindow(baseWindow):
         self.stepsListTmp = list(self.sgfData.stepsList)
         self.sgfData.stepsList = self.sgfData.stepsList[:self.stepPoint] + variation
         self.stepPoint += len(variation)
-        self.saveAsAction.setEnabled(False)
+        self.saveAsAction.setEnabled(True)
         self.backAction.setEnabled(True)
         self.controlDock.controlWidget.backButton.setEnabled(True)
         self.resignAction.setEnabled(False)
