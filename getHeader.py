@@ -20,6 +20,8 @@ class getHeader:
         return self.__checkHaveName(self.name)
 
     def __checkHaveName(self, name):
+        if name == "-" or name == "":
+            return None
         for i in range(1, 4):
             url = "http://sinago.com/info/china_player.asp?ntn={}".format(i)
             req = request.urlopen(url)
