@@ -146,6 +146,7 @@ class sgfExplorerDisplay(QWidget):
         searchLayout.addWidget(self.filterLabel)
         searchLayout.addWidget(self.filterLine)
         self.explorer = QTreeWidget()
+        self.explorer.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.explorer.setHeaderLabel("Sgf files")
         
         funcLayout = QHBoxLayout(None)
@@ -172,18 +173,23 @@ class sgfExplorerDisplay(QWidget):
         self.reloadFunc.clicked.connect(self.reloadFunc_)
     
     def enableFunc(self):
-        if len(self.explorer.selectedItems()) != 0:
+        t = len(self.explorer.selectedItems())
+        if  t == 0:
+            self.delFunc.setEnabled(False)
+            self.renameFunc.setEnabled(False)
+        elif t == 1:
             self.delFunc.setEnabled(True)
             self.renameFunc.setEnabled(True)
         else:
-            self.delFunc.setEnabled(False)
+            self.delFunc.setEnabled(True)
             self.renameFunc.setEnabled(False)
     
     def delFunc_(self):
-        re = QMessageBox.warning(self, "sgf explorer", "Are you sure to delete this file?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        re = QMessageBox.warning(self, "sgf explorer", "Are you sure to delete the selected file(s)?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if re == 16384:
-            f = os.path.join(self.sgfPath, self.explorer.selectedItems()[0].text(0))
-            os.remove(f)
+            for i in self.explorer.selectedItems():
+                f = os.path.join(self.sgfPath, i.text(0))
+                os.remove(f)
             self.reloadFunc_()
             
     
