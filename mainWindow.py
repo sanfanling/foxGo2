@@ -157,6 +157,8 @@ class mainWindow(baseWindow):
                 self.changeBoardSize_(self.sgfData.size)
             self.thisGame.init(self.settingData.boardSize)
             self.thisGame.getHaSteps(self.sgfData.haList)
+            self.backAction.setEnabled(False)
+            self.controlDock.controlWidget.backButton.setEnabled(False)
             self.saveAsAction.setEnabled(True)
             self.resignAction.setEnabled(False)
             self.controlDock.controlWidget.resignAction.setEnabled(False)
