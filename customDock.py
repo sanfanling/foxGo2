@@ -147,13 +147,56 @@ class sgfExplorerDisplay(QWidget):
         searchLayout.addWidget(self.filterLine)
         self.explorer = QTreeWidget()
         self.explorer.setHeaderLabel("Sgf files")
+        
+        funcLayout = QHBoxLayout(None)
+        self.delFunc = QPushButton("Del...")
+        self.delFunc.setEnabled(False)
+        self.renameFunc = QPushButton("Rename...")
+        self.renameFunc.setEnabled(False)
+        self.reloadFunc = QPushButton("reload")
+        funcLayout.addWidget(self.delFunc)
+        funcLayout.addWidget(self.renameFunc)
+        funcLayout.addWidget(self.reloadFunc)
+        
         mainLayout.addLayout(searchLayout)
         mainLayout.addWidget(self.explorer)
+        mainLayout.addLayout(funcLayout)
         self.setLayout(mainLayout)
         self.showItems()
         
         self.filterLine.textChanged.connect(self.showItems)
         self.explorer.itemDoubleClicked.connect(self.showSelectedSgfFile)
+        self.explorer.itemSelectionChanged.connect(self.enableFunc)
+        self.delFunc.clicked.connect(self.delFunc_)
+        self.renameFunc.clicked.connect(self.renameFunc_)
+        self.reloadFunc.clicked.connect(self.reloadFunc_)
+    
+    def enableFunc(self):
+        if len(self.explorer.selectedItems()) != 0:
+            self.delFunc.setEnabled(True)
+            self.renameFunc.setEnabled(True)
+        else:
+            self.delFunc.setEnabled(False)
+            self.renameFunc.setEnabled(False)
+    
+    def delFunc_(self):
+        re = QMessageBox.warning(self, "sgf explorer", "Are you sure to delete this file?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if re == 16384:
+            f = os.path.join(self.sgfPath, self.explorer.selectedItems()[0].text(0))
+            os.remove(f)
+            self.reloadFunc_()
+            
+    
+    def renameFunc_(self):
+        name = self.explorer.selectedItems()[0].text(0)
+        text, ok= QInputDialog.getText(self, "Rename:", "Input new file name:", QLineEdit.Normal, name)
+        if ok and text != "":
+            os.rename(os.path.join(self.sgfPath, name), os.path.join(self.sgfPath, text))
+            self.reloadFunc_()
+    
+    def reloadFunc_(self):
+        self.filterLine.clear()
+        self.showItems()
         
     def syncPath(self):
         self.sgfPath = self.parent.settingData.sgfPath
