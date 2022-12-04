@@ -1,5 +1,5 @@
 # foxGo2
-## It is a GO program and 2nd generation of foxGo, which is written by PyQt5, with independent GO engine. The first purpose of this application is viewing all go game on Tencent weiqi easily, next will realize more functions. Playing with jueyi is concerned if possible :)
+## It is a GO game application and 2nd generation of foxGo, which is written by PyQt5, with independent GO engine. The first purpose of this application is viewing all go game on Tencent weiqi easily, next will realize more functions. Playing with jueyi is concerned if possible :)
 
 ### Dependency:
 * python >= 3.6
