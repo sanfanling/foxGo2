@@ -13,8 +13,8 @@ from goEngine import go
 from otherDialog import *
 from configrationDialog import configrationDialog
 from getHeaderThread import getHeaderThread
-
 import sys, os, re, time
+
 
 class mainWindow(baseWindow):
     
@@ -464,7 +464,7 @@ class mainWindow(baseWindow):
                 a.toFile(root + rest)
                 self.sgfExplorerDock.sgfExplorerDisplay.showItems()
         
-                
+        
     def size9_(self):
         self.changeBoardSize_(9)
         self.startFreeMode()
@@ -564,12 +564,3 @@ class mainWindow(baseWindow):
         self.settingData.recentGamesDockTableState = self.recentGamesDock.recentGamesDisplay.table.horizontalHeader().saveState()
         self.settingData.saveIniFile()
         e.accept()
-
-
-
-if __name__ == "__main__":
-	app = QApplication(sys.argv)
-	w = mainWindow()
-	w.show()
-	sys.exit(app.exec_())
-    

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 # filename: goBoard.py
 
-
-
 import os, sys, time
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -11,52 +9,14 @@ from PyQt5.QtGui import *
 from goEngine import go
 from sgfData import step
 
-class container(QMainWindow):
-    
-    def __init__(self):
-        super().__init__()
-        self.boardSize = 19
-        self.thisGame = go()
-        self.board = goBoard(self, self.boardSize)
-        
-        self.setCentralWidget(self.board)
-        
-        #self.infoDock = QDockWidget("Information")
-        #self.infoDisplay = QWidget()
-        #self.infoDock.setWidget(self.infoDisplay)
-        #self.infoDock.setFloating(False)
-        #self.addDockWidget(Qt.RightDockWidgetArea, self.infoDock)
-        
-        #self.statusArea = self.statusBar()
-        #self.coordLabel = QLabel("application coordinate: %d,%d      board coordinate: %d,%d      go coordinate: %d,%d", self)
-        #self.coordLabel.setAlignment(Qt.AlignLeft)
-        #self.modeLabel = QLabel(self)
-        #self.modeLabel.setAlignment(Qt.AlignRight)
-        #self.statusArea.addPermanentWidget(self.coordLabel, 5)
-        #self.statusArea.addPermanentWidget(self.modeLabel, 1)
-    
-    def resizeEvent(self, e):
-        l = min(self.board.width(), self.board.height())
-        cellSize = l // (self.boardSize + 1)
-        if cellSize < 25:
-            pass
-        else:
-            self.board.setSizePara(cellSize)
-        
-        
-        
 
 class goBoard(QLabel):
-    
-    startPaint = pyqtSignal()
-    endPaint = pyqtSignal()
     
     def __init__(self, parent = None, size = 19, stylePath = "./res/pictures/style2.png"):
         super().__init__()
         self.parent = parent
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setBoardSize(size)
-        #self.setBoardStyle(stylePath)
         self.setSizePara(30)
         self.thinLine = 1
         self.thickLine = 3
@@ -66,7 +26,6 @@ class goBoard(QLabel):
         self.inBoard = False
         self.setMouseTracking(True)
         self.fontInfo = QFontMetrics(self.font())
-        #self.adjustSize()
         
     def setSizePara(self, cellSize = 25):
         self.cellSize = cellSize
@@ -151,15 +110,12 @@ class goBoard(QLabel):
             self.parent.thisGame.makeStepPass()
     
     def paintEvent(self, e):
-        self.startPaint.emit()
         p = QPainter()
         p.begin(self)
         self.__paintBoard(p)
         self.__paintMousePointRect(p)
         self.__paintSuccessedMoves(p)
         p.end()
-        self.endPaint.emit()
-        #self.adjustSize()
     
     def __paintSuccessedMoves(self, p):
         if self.x != None and self.y != None and self.parent.thisGame.stepsGoDict != {}:
@@ -262,12 +218,3 @@ class goBoard(QLabel):
     def sizeHint(self):
         s = self.cellSize * (self.boardSize + 1)
         return QSize(s, s)
-
-
-
-if __name__ == "__main__":
-	app = QApplication(sys.argv)
-	w = container()
-	w.show()
-	sys.exit(app.exec_())
-

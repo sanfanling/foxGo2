@@ -10,7 +10,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from goBoard import goBoard
 from customDock import *
-
 from settingData import settingData
 
 
@@ -23,7 +22,6 @@ class baseWindow(QMainWindow):
         
         self.settingData = settingData()
         
-        
         self.setAcceptDrops(self.settingData.acceptDragDrop)
         
         self.initDockwidget()
@@ -31,8 +29,6 @@ class baseWindow(QMainWindow):
         self.initMenuBar()
         self.initStatusBar()
         
-        self.board.startPaint.connect(self.removeFromLayout)
-        self.board.endPaint.connect(self.addToLayout)
         self.aboutQt.triggered.connect(self.aboutQt_)
         self.aboutApp.triggered.connect(self.aboutApp_)
         self.printGo.triggered.connect(self.printGo_)
@@ -52,9 +48,10 @@ class baseWindow(QMainWindow):
             self.board.setSizePara(25)
         else:
             self.board.setSizePara(cellSize)
-        
+    
     def resizeEvent(self, e):
-        self.adjustBoardSize()
+        self.removeFromLayout()
+        self.addToLayout()
     
     def initMenuBar(self):        
         gameMenu = self.menuBar().addMenu("Game(&G)")
@@ -139,7 +136,6 @@ class baseWindow(QMainWindow):
         otherMenu.addAction(self.passAction)
         otherMenu.addAction(self.resignAction)
         
-        
         stepsNumberMenu = boardMenu.addMenu("Step number")
         self.stepsNumberGroup = QActionGroup(self)
         self.stepsNumberAll = QAction("All")
@@ -182,15 +178,15 @@ class baseWindow(QMainWindow):
         helpMenu.addAction(self.aboutQt)
     
     def initCentralWidget(self):
-        centralWidget = QWidget()
+        self.centralWidget = boardAreaWidget(self)
         self.mainLayout = QVBoxLayout(None)
         self.board = goBoard(self, self.settingData.boardSize)
         self.addToLayout()
         self.adjustBoardSize()
         self.board.update()
         
-        centralWidget.setLayout(self.mainLayout)
-        self.setCentralWidget(centralWidget)
+        self.centralWidget.setLayout(self.mainLayout)
+        self.setCentralWidget(self.centralWidget)
     
     def initDockwidget(self):
         self.sgfExplorerDock = sgfExplorerDock("Sgf explorer", self)
@@ -224,7 +220,6 @@ class baseWindow(QMainWindow):
     
     def initStatusBar(self):
         self.modeLabel = QLabel()
-        #self.modeLabel.setAlignment(Qt.AlignLeft)
         self.statusBar().addPermanentWidget(self.modeLabel)
     
     def setAllShortcuts(self):
@@ -263,9 +258,13 @@ class baseWindow(QMainWindow):
     def aboutApp_(self):
         QMessageBox.about(self, "About foxGo2", "2nd generation of foxGo, with new interface and better experience.\nSupport importing/exporting sgf file\nSupport foxWeiqi fast view\nSupport face system\nSupport editing comments\nSupport all-size board(9, 13, 19)\n\nAuthor: sanfanling\nE-mail: xujia19@outlook.com")
 
-
-if __name__ == "__main__":
-	app = QApplication(sys.argv)
-	w = baseWindow()
-	w.show()
-	sys.exit(app.exec_())
+class boardAreaWidget(QWidget):
+    
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+    
+    def resizeEvent(self, e):
+        self.parent.adjustBoardSize()
+        self.parent.removeFromLayout()
+        self.parent.addToLayout()
