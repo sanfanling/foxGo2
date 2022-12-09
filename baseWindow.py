@@ -3,7 +3,7 @@
 # filename: baseWindow.py 
 
 
-import os, sys
+import os, sys, glob
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -23,6 +23,8 @@ class baseWindow(QMainWindow):
         self.settingData = settingData()
         
         self.setAcceptDrops(self.settingData.acceptDragDrop)
+        
+        self.allBoardStyles = ("Style1", "Style2", "Style3", "Style4", "Style5", "Style6", "Style7", "Style8")
         
         self.initDockwidget()
         self.initCentralWidget()
@@ -95,18 +97,16 @@ class baseWindow(QMainWindow):
         
         boardStyleMenu = boardMenu.addMenu("Board style")
         self.styleGroup = QActionGroup(self)
+        
         self.boardNoStyle = QAction("None")
-        self.boardStyle1 = QAction("Style1")
-        self.boardStyle2 = QAction("Style2")
         self.boardNoStyle.setCheckable(True)
-        self.boardStyle1.setCheckable(True)
-        self.boardStyle2.setCheckable(True)
         self.styleGroup.addAction(self.boardNoStyle)
-        self.styleGroup.addAction(self.boardStyle1)
-        self.styleGroup.addAction(self.boardStyle2)
         boardStyleMenu.addAction(self.boardNoStyle)
-        boardStyleMenu.addAction(self.boardStyle1)
-        boardStyleMenu.addAction(self.boardStyle2)
+        for styles in self.allBoardStyles:
+            exec(f"self.board{styles} = QAction('{styles}')")
+            eval(f"self.board{styles}.setCheckable(True)")
+            eval(f"self.styleGroup.addAction(self.board{styles})")
+            eval(f"boardStyleMenu.addAction(self.board{styles})")
         
         controlMenu = self.menuBar().addMenu("Control(&C)")
         self.toStartAction = QAction("Previous to start")

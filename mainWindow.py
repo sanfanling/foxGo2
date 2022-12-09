@@ -33,13 +33,17 @@ class mainWindow(baseWindow):
             self.musicEquipment.play()
         self.effectSounds.setChecked(self.settingData.effectSounds)
         self.effectEquipment = QSoundEffect()
-        if self.settingData.boardStyle == "style1":
-            self.boardStyle1.setChecked(True)
-        elif self.settingData.boardStyle == "style2":
-            self.boardStyle2.setChecked(True)
-        else:
+        
+        
+        if self.settingData.boardStyle == "none":
             self.boardNoStyle.setChecked(True)
+        else:
+            exec(f"self.board{self.settingData.boardStyle.title()}.setChecked(True)")
+        
         self.board.setBoardStyle(self.settingData.boardStyle)
+        
+        
+        
         if self.settingData.stepsNumber == "current":
             self.stepsNumberCurrent.setChecked(True)
         elif self.settingData.stepsNumber == "all":
@@ -72,12 +76,15 @@ class mainWindow(baseWindow):
         self.hideCursor.toggled.connect(self.hideCursor_)
         self.backgroundMusic.toggled.connect(self.backgroundMusic_)
         self.effectSounds.toggled.connect(self.effectSounds_)
-        self.boardStyle1.triggered.connect(self.changeBoardStyle_)
-        self.boardStyle2.triggered.connect(self.changeBoardStyle_)
+        
+        self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
+        for changeStyle in self.allBoardStyles:
+            exec(f"self.board{changeStyle}.triggered.connect(self.changeBoardStyle_)")        
+        
         self.size9.triggered.connect(self.size9_)
         self.size13.triggered.connect(self.size13_)
         self.size19.triggered.connect(self.size19_)
-        self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
+        
         self.stepsNumberAll.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberCurrent.triggered.connect(self.changeStepsNumber_)
         self.stepsNumberHide.triggered.connect(self.changeStepsNumber_)
@@ -528,7 +535,7 @@ class mainWindow(baseWindow):
         style = self.sender().text().lower()
         if self.settingData.boardStyle != style:
             self.settingData.boardStyle = style
-            self.board.setBoardStyle(style)
+            self.board.setBoardStyle(style)        
     
     def changeStepsNumber_(self):
         text = self.sender().text().lower()
