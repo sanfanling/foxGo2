@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import sys, os
-from PyQt5.QtCore import *
+from PyQt6.QtCore import *
 from getHeader import getHeader
 import requests
 

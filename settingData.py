@@ -5,7 +5,7 @@
 #licence: GPL-V3
 
 
-from PyQt5.QtCore import QSettings
+from PyQt6.QtCore import QSettings
 import os.path
 
 
@@ -13,7 +13,7 @@ class settingData:
     
     def __init__(self):
         configPath = os.path.join(os.path.expanduser("~"), ".foxGo2.conf")
-        self.iniFile = QSettings(configPath, QSettings.IniFormat)
+        self.iniFile = QSettings(configPath, QSettings.Format.IniFormat)
         
         
         self.sgfPath = self.iniFile.value("/common/sgfpath", ".")

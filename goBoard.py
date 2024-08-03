@@ -3,9 +3,9 @@
 # filename: goBoard.py
 
 import os, sys, time
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 from goEngine import go
 from sgfData import step
 
@@ -15,7 +15,7 @@ class goBoard(QLabel):
     def __init__(self, parent = None, size = 19, stylePath = "./res/pictures/style2.png"):
         super().__init__()
         self.parent = parent
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.setBoardSize(size)
         self.setSizePara(30)
         self.thinLine = 1
@@ -52,22 +52,22 @@ class goBoard(QLabel):
             self.setStyleSheet("QLabel{background-image: url(res/pictures/%s.png)}" %style)
     
     def mouseMoveEvent(self, e):
-        self.x = e.x()
-        self.y = e.y()
+        self.x = e.pos().x()
+        self.y = e.pos().y()
         if self.boardEdge <= self.x <= self.boardEdge + self.cellSize * (self.boardSize - 1) and self.boardEdge <= self.y <= self.boardEdge + self.cellSize * (self.boardSize - 1):
             self.inBoard = True
             if self.parent.settingData.hideCursor:
-                self.setCursor(QCursor(Qt.BlankCursor))
+                self.setCursor(QCursor(Qt.CursorShape.BlankCursor))
             self.update()
         else:
             self.inBoard = False
-            self.setCursor(QCursor(Qt.ArrowCursor))
+            self.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
             self.update()
     
     def mousePressEvent(self, e):
         px, py = self.boardToGo((self.x, self.y))
         hasStone = (px, py) in self.parent.thisGame.stepsGoDict
-        if e.button() == Qt.LeftButton and self.parent.mode == "free" and self.inBoard and not hasStone:
+        if e.button() == Qt.MouseButton.LeftButton and self.parent.mode == "free" and self.inBoard and not hasStone:
             if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
                 self.parent.restartFreeAndTestMode()
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
@@ -80,7 +80,7 @@ class goBoard(QLabel):
                 self.parent.showStepsCount(True)
                 self.update()
                 self.parent.makeSound(moveSuccess, deadChessNum)
-        elif e.button() == Qt.LeftButton and self.parent.mode == "review" and self.inBoard and not hasStone:
+        elif e.button() == Qt.MouseButton.LeftButton and self.parent.mode == "review" and self.inBoard and not hasStone:
             self.parent.startTestMode()
             self.parent.thisGame.stepNum = 0
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
@@ -93,7 +93,7 @@ class goBoard(QLabel):
                 self.parent.showStepsCount(True)
                 self.update()
                 self.parent.makeSound(moveSuccess, deadChessNum)
-        elif e.button() == Qt.LeftButton and self.parent.mode == "test" and self.inBoard and not hasStone:
+        elif e.button() == Qt.MouseButton.LeftButton and self.parent.mode == "test" and self.inBoard and not hasStone:
             if self.parent.stepPoint != len(self.parent.sgfData.stepsList):
                 self.parent.restartFreeAndTestMode()
             self.parent.thisGame.x, self.parent.thisGame.y = px, py
@@ -106,7 +106,7 @@ class goBoard(QLabel):
                 self.parent.showStepsCount(True)
                 self.update()
                 self.parent.makeSound(moveSuccess, deadChessNum)
-        if e.button() == Qt.RightButton and self.inBoard:
+        if e.button() == Qt.MouseButton.RightButton and self.inBoard:
             self.parent.thisGame.makeStepPass()
     
     def paintEvent(self, e):
@@ -121,11 +121,11 @@ class goBoard(QLabel):
         if self.x != None and self.y != None and self.parent.thisGame.stepsGoDict != {}:
             for x, y in list(self.parent.thisGame.stepsGoDict.keys()):
                 if self.parent.thisGame.stepsGoDict[(x, y)][0] == "black":
-                    pix = QPixmap("res/pictures/blackStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
-                    fontColor = Qt.white
+                    pix = QPixmap("res/pictures/blackStone.png").scaled(self.stonesize, self.stonesize, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                    fontColor = Qt.GlobalColor.white
                 else:
-                    pix = QPixmap("res/pictures/whiteStone.png").scaled(self.stonesize, self.stonesize, 0, 1)
-                    fontColor = Qt.black
+                    pix = QPixmap("res/pictures/whiteStone.png").scaled(self.stonesize, self.stonesize, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                    fontColor = Qt.GlobalColor.black
                 (x1, y1) = self.goToBoard((x, y))
                 p.drawPixmap(x1 - self.stonesize // 2, y1 - self.stonesize // 2, pix)
             
@@ -137,7 +137,7 @@ class goBoard(QLabel):
                         font.setPointSize(self.stonesize // 3)
                         p.setFont(font)
                         rect = QRect(x1 - self.stonesize // 2, y1 - self.stonesize // 2, self.stonesize // 2 * 2, self.stonesize // 2 * 2)
-                        p.drawText(rect, Qt.AlignCenter, str(count))
+                        p.drawText(rect, Qt.AlignmentFlag.AlignCenter, str(count))
             
             if self.parent.settingData.stepsNumber == "hide":
                 p.setPen(QPen(fontColor, 1))
@@ -153,13 +153,13 @@ class goBoard(QLabel):
                 font.setPointSize(self.stonesize // 3)
                 p.setFont(font)
                 rect = QRect(x1 - self.stonesize // 2, y1 - self.stonesize // 2, self.stonesize // 2 * 2, self.stonesize // 2 * 2)
-                p.drawText(rect, Qt.AlignCenter, str(self.parent.thisGame.stepsGoDict[(x, y)][1]))
+                p.drawText(rect, Qt.AlignmentFlag.AlignCenter, str(self.parent.thisGame.stepsGoDict[(x, y)][1]))
             
     
     def __paintBoard(self, p):
         for i in range(self.boardSize):
             lineThickness = self.thickLine if i == 0 or i == self.boardSize - 1 else self.thinLine
-            p.setPen(QPen(Qt.black, lineThickness))
+            p.setPen(QPen(Qt.GlobalColor.black, lineThickness))
             p.drawLine(self.boardEdge, self.boardEdge + self.cellSize * i, self.boardEdge + self.cellSize * (self.boardSize - 1), self.boardEdge + self.cellSize * i,)
             p.drawLine(self.boardEdge + self.cellSize * i, self.boardEdge, self.boardEdge + self.cellSize * i, self.boardEdge + self.cellSize * (self.boardSize - 1))
             if self.parent.settingData.withCoordinate:
@@ -175,8 +175,8 @@ class goBoard(QLabel):
             dotPosition = ()
         for j in dotPosition:
             x, y = self.goToBoard(j)
-            p.setPen(QPen(Qt.black, 1))
-            p.setBrush(QBrush(Qt.black))
+            p.setPen(QPen(Qt.GlobalColor.black, 1))
+            p.setBrush(QBrush(Qt.GlobalColor.black))
             p.drawEllipse(QPoint(x, y), self.dotRadius, self.dotRadius)
     
     def __paintMousePointRect(self, p):
@@ -185,8 +185,8 @@ class goBoard(QLabel):
             if (gx, gy) in self.parent.thisGame.stepsGoDict:
                 return
             x, y = self.goToBoard((gx, gy))
-            p.setPen(QPen(Qt.white, 1))
-            p.setBrush(QBrush(Qt.white, Qt.SolidPattern))
+            p.setPen(QPen(Qt.GlobalColor.white, 1))
+            p.setBrush(QBrush(Qt.GlobalColor.white, Qt.BrushStyle.SolidPattern))
             p.drawRect(x - int(self.rectSize / 2), y - int(self.rectSize / 2), self.rectSize, self.rectSize)
     
     def goToBoard(self, co):

@@ -3,9 +3,9 @@
 # filename: editCommentsDialog.py 
 
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 import sys, os
 from faceDict import faceDict
 
@@ -27,7 +27,7 @@ class editCommentsDialog(QDialog):
         self.okButton = QPushButton("OK")
         self.cancelButton = QPushButton("Cancel")
         self.faceButton = QPushButton("+Face")
-        self.faceButton.setFocusPolicy(Qt.NoFocus)
+        self.faceButton.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         buttonLayout.addWidget(self.faceButton)
         buttonLayout.addStretch()
         buttonLayout.addWidget(self.okButton)
@@ -59,7 +59,7 @@ class faceDisplay(QScrollArea):
     
     def __init__(self, parent = None):
         super().__init__()
-        self.setWindowFlags(Qt.Popup)
+        self.setWindowFlags(Qt.WindowType.Popup)
         self.parent = parent
         self.container = faceContainer(self)
         self.setWidget(self.container)
@@ -83,7 +83,7 @@ class faceContainer(QWidget):
             gifPath = os.path.join("res/face", faceList[ind])
             row, col = divmod(ind, 14)
             gl = gifLabel(gifPath, parent)
-            mainLayout.addWidget(gl, row, col, Qt.AlignHCenter)
+            mainLayout.addWidget(gl, row, col, Qt.AlignmentFlag.AlignHCenter)
             ind += 1
         self.setLayout(mainLayout)
     
@@ -114,4 +114,4 @@ if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	w = editCommentsDialog(None)
 	w.show()
-	sys.exit(app.exec_())
+	sys.exit(app.exec())

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # filename: configrationDialog.py  
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 import sys, os
 
 
@@ -23,8 +23,8 @@ class configrationDialog(QDialog):
         buttonBox = QDialogButtonBox(self)
         cancelButton = QPushButton("Cancel")
         okButton = QPushButton("OK")
-        buttonBox.addButton(cancelButton, QDialogButtonBox.RejectRole)
-        buttonBox.addButton(okButton, QDialogButtonBox.AcceptRole)
+        buttonBox.addButton(cancelButton, QDialogButtonBox.ButtonRole.RejectRole)
+        buttonBox.addButton(okButton, QDialogButtonBox.ButtonRole.AcceptRole)
         
         mainLayout.addWidget(self.pathsBox)
         mainLayout.addWidget(self.optionsBox)
@@ -42,14 +42,14 @@ class pathsBox(QGroupBox):
         super().__init__()
         self.parent = parent
         self.setTitle("Paths")
-        self.setAlignment(Qt.AlignHCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         
         mainLayout = QGridLayout(None)
         self.sgfPathLabel = QLabel("Default sgf path:")
         self.sgfPath = QLineEdit()
         self.sgfPath.setReadOnly(True)
         self.sgfPathButton = QPushButton("...")
-        self.sgfPathButton.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.sgfPathButton.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         mainLayout.addWidget(self.sgfPathLabel, 0, 0)
         mainLayout.addWidget(self.sgfPath, 0, 1)
         mainLayout.addWidget(self.sgfPathButton, 0, 2)
@@ -57,7 +57,7 @@ class pathsBox(QGroupBox):
         self.customMusic = QLineEdit()
         self.customMusic.setReadOnly(True)
         self.customMusicButton = QPushButton("...")
-        self.customMusicButton.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.customMusicButton.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         mainLayout.addWidget(self.customMusicLabel, 1, 0)
         mainLayout.addWidget(self.customMusic, 1, 1)
         mainLayout.addWidget(self.customMusicButton, 1, 2)
@@ -68,11 +68,13 @@ class pathsBox(QGroupBox):
         
     def changeSgfPath(self):
         d = QFileDialog.getExistingDirectory(None, "Choose a directory", os.path.expanduser(self.parent.settingData.sgfPath))
-        self.sgfPath.setText(d)
+        if d:
+            self.sgfPath.setText(d)
     
     def changeMusic(self):
         f, y= QFileDialog.getOpenFileName(None, "Choose a media file", self.parent.settingData.musicPath, "WAV file(*.wav)")
-        self.customMusic.setText(f)
+        if f:
+            self.customMusic.setText(f)
 
 class shortcutsBox(QGroupBox):
     
@@ -80,7 +82,7 @@ class shortcutsBox(QGroupBox):
         super().__init__()
         self.parent = parent
         self.setTitle("Shortcuts")
-        self.setAlignment(Qt.AlignHCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignHCenter)
                 
         mainLayout = QFormLayout(None)
         self.previousToStart = QKeySequenceEdit(self.parent.settingData.previousToStart)
@@ -106,10 +108,10 @@ class optionsBox(QGroupBox):
         super().__init__()
         self.parent = parent
         self.setTitle("Options")
-        self.setAlignment(Qt.AlignHCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         
         mainLayout = QVBoxLayout(None)
-        self.autoSkip = QCheckBox("Auto skip when sgf file exists")
+        self.autoSkip = QCheckBox("Auto skip when downloading a existed sgf file")
         self.acceptDragDrop = QCheckBox("Accept drag & drop sgf file")
         intervalLayout = QFormLayout(None)
         self.intervalSpinBox = QSpinBox(None)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # filename: foxGo2.py
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMessageBox
 from mainWindow import mainWindow
 import sys, os
 
@@ -19,4 +19,4 @@ if __name__ == "__main__":
         #f.close()
         w = mainWindow()
         w.show()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())

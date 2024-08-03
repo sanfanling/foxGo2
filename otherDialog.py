@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # filename: otherDialog.py  
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 import sys, os
 
 
@@ -22,8 +22,8 @@ class rootDialog(QDialog):
         buttonBox = QDialogButtonBox(self)
         cancelButton = QPushButton("Cancel")
         okButton = QPushButton("OK")
-        buttonBox.addButton(cancelButton, QDialogButtonBox.RejectRole)
-        buttonBox.addButton(okButton, QDialogButtonBox.AcceptRole)
+        buttonBox.addButton(cancelButton, QDialogButtonBox.ButtonRole.RejectRole)
+        buttonBox.addButton(okButton, QDialogButtonBox.ButtonRole.AcceptRole)
         
         mainLayout.addWidget(self.playerInfoBox)
         mainLayout.addWidget(self.gameInfoBox)
@@ -44,7 +44,7 @@ class playerInfoBox(QGroupBox):
         super().__init__()
         self.parent = parent
         self.setTitle("Player info")
-        self.setAlignment(Qt.AlignHCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         
         mainLayout = QFormLayout(None)
         
@@ -70,7 +70,7 @@ class gameInfoBox(QGroupBox):
         super().__init__()
         self.parent = parent
         self.setTitle("Game info")
-        self.setAlignment(Qt.AlignHCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         
         mainLayout = QFormLayout(None)
         
@@ -109,4 +109,4 @@ if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	w = editCommentsDialog()
 	w.show()
-	sys.exit(app.exec_())
+	sys.exit(app.exec())

@@ -4,9 +4,9 @@
 
 
 import os, sys, re
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 from customThread import getCatalogThread, getSgfThread
 import glob
 from editCommentsDialog import editCommentsDialog
@@ -21,7 +21,7 @@ class QLineEditWithHistory(QLineEdit):
         self.setPlaceholderText("Press Enter to record to history")
         self.completer = QCompleter(self)
         self.listModel = QStringListModel(self.searchHistoryList, self)
-        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
+        self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setModel(self.listModel)
         self.setCompleter(self.completer)
         
@@ -34,22 +34,22 @@ class QLineEditWithHistory(QLineEdit):
             self.searchHistoryList.insert(0, content)
             self.searchHistoryList = self.searchHistoryList[:10]
             self.listModel.setStringList(self.searchHistoryList)
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
     
     def popupFinished(self, text):
-        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
     
     def event(self, event):
-        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Tab:
-            self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Tab:
+            self.completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
             self.completer.complete()
             self.completer.popup().show()
             return True
         return super().event(event)
     
     def mousePressEvent(self, event):
-        if event.buttons () == Qt.LeftButton:
-            self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        if event.buttons () == Qt.MouseButton.LeftButton:
+            self.completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
             self.completer.complete()
             self.completer.popup().show()
 
@@ -108,7 +108,7 @@ class controlWidget(QWidget):
         
         self.stepsSlider = QSlider(self)
         self.stepsSlider.setTracking(True)
-        self.stepsSlider.setOrientation(Qt.Horizontal)
+        self.stepsSlider.setOrientation(Qt.Orientation.Horizontal)
         
         mainLayout.addLayout(controlLayout)
         mainLayout.addWidget(self.stepsSlider)
@@ -146,15 +146,15 @@ class sgfExplorerDisplay(QWidget):
         searchLayout.addWidget(self.filterLabel)
         searchLayout.addWidget(self.filterLine)
         self.explorer = QTreeWidget()
-        self.explorer.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.explorer.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.explorer.setHeaderLabel("Sgf files")
         
         funcLayout = QHBoxLayout(None)
-        self.delFunc = QPushButton("Del...")
+        self.delFunc = QPushButton("Delete...")
         self.delFunc.setEnabled(False)
         self.renameFunc = QPushButton("Rename...")
         self.renameFunc.setEnabled(False)
-        self.reloadFunc = QPushButton("reload")
+        self.reloadFunc = QPushButton("Refresh")
         funcLayout.addWidget(self.delFunc)
         funcLayout.addWidget(self.renameFunc)
         funcLayout.addWidget(self.reloadFunc)
@@ -185,7 +185,7 @@ class sgfExplorerDisplay(QWidget):
             self.renameFunc.setEnabled(False)
     
     def delFunc_(self):
-        re = QMessageBox.warning(self, "sgf explorer", "Are you sure to delete the selected file(s)?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        re = QMessageBox.warning(self, "sgf explorer", "Are you sure to delete the selected file(s)?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
         if re == 16384:
             for i in self.explorer.selectedItems():
                 f = os.path.join(self.sgfPath, i.text(0))
@@ -195,7 +195,7 @@ class sgfExplorerDisplay(QWidget):
     
     def renameFunc_(self):
         name = self.explorer.selectedItems()[0].text(0)
-        text, ok= QInputDialog.getText(self, "Rename:", "Input new file name:", QLineEdit.Normal, name)
+        text, ok= QInputDialog.getText(self, "Rename:", "Input new file name:", QLineEdit.EchoMode.Normal, name)
         if ok and text != "":
             os.rename(os.path.join(self.sgfPath, name), os.path.join(self.sgfPath, text))
             self.reloadFunc_()
@@ -253,15 +253,15 @@ class recentGamesDisplay(QWidget):
         mainLayout = QVBoxLayout(None)
         self.stack = QStackedWidget()
         self.loadingLabel = QLabel()
-        self.loadingLabel.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.loadingLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         movie = QMovie("res/pictures/waiting.gif")
         self.loadingLabel.setMovie(movie)
         self.table = QTableWidget(0, 4)
         self.table.hideColumn(0)
         self.table.hideColumn(3)
-        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         header = ["Select", "Game", "Date", "key"]
         self.table.setHorizontalHeaderLabels(header)
         self.stack.addWidget(self.loadingLabel)
@@ -411,22 +411,22 @@ class infoDisplay(QWidget):
         mainLayout = QVBoxLayout(None)
         
         self.gameLabel = QLabel("-")
-        self.gameLabel.setAlignment(Qt.AlignCenter)
-        self.gameLabel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.gameLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.gameLabel.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.gameLabel.setWordWrap(True)
         self.gameLabel.setStyleSheet("QLabel {font-weight: bold; font-size: 15px}")
         
         playerLayout = QHBoxLayout(None)
         blackLayout = QVBoxLayout(None)
         self.blackLabel = QLabel("BLACK")
-        self.blackLabel.setAlignment(Qt.AlignCenter)
-        self.blackLabel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.blackLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.blackLabel.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.blackLabel.setStyleSheet("QLabel {font-weight: bold; font-size: 13px}")
         self.blackPlayer = QLabel("-")
-        self.blackPlayer.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        self.blackPlayer.setAlignment(Qt.AlignCenter)
+        self.blackPlayer.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        self.blackPlayer.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.blackPhoto = QLabel()
-        self.blackPhoto.setAlignment(Qt.AlignCenter)
+        self.blackPhoto.setAlignment(Qt.AlignmentFlag.AlignCenter)
         photoSheet = "min-width: 100px; max-width: 100px; min-height: 100px; max-height: 100px; border-radius: 50px; border-width: 0 0 0 0; border-image: url(headers/blank.png) 0 0 0 0 stretch strectch;"
         self.blackPhoto.setStyleSheet(photoSheet)
         
@@ -435,22 +435,22 @@ class infoDisplay(QWidget):
         blackLayout.addWidget(self.blackPhoto)
         whiteLayout = QVBoxLayout(None)
         self.whiteLabel = QLabel("WHITE")
-        self.whiteLabel.setAlignment(Qt.AlignCenter)
-        self.whiteLabel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.whiteLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.whiteLabel.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.whiteLabel.setStyleSheet("QLabel {font-weight: bold; font-size: 13px}")
         self.whitePlayer = QLabel("-")
-        self.whitePlayer.setAlignment(Qt.AlignCenter)
-        self.whitePlayer.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.whitePlayer.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.whitePlayer.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.whitePhoto = QLabel()
-        self.whitePhoto.setAlignment(Qt.AlignCenter)
+        self.whitePhoto.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.whitePhoto.setStyleSheet(photoSheet)
         
         whiteLayout.addWidget(self.whiteLabel)
         whiteLayout.addWidget(self.whitePlayer)
         whiteLayout.addWidget(self.whitePhoto)
         vsLabel = QLabel("VS")
-        vsLabel.setAlignment(Qt.AlignCenter)
-        vsLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        vsLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        vsLabel.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         playerLayout.addLayout(blackLayout)
         playerLayout.addWidget(vsLabel)
         playerLayout.addLayout(whiteLayout)
@@ -565,14 +565,12 @@ class commentsDisplay(QWidget):
         self.commentsBox.setOpenLinks(False)
         
         buttonLayout = QHBoxLayout(None)
-        self.insertVariation = QPushButton("Insert variation...")
-        self.editCommentButton = QPushButton("Edit comments...")
-        self.delVariation = QPushButton("Del variation...")
-        buttonLayout.addStretch()
+        self.insertVariation = QPushButton("Insert...")
+        self.editCommentButton = QPushButton("Edit...")
+        self.delVariation = QPushButton("Del...")
         buttonLayout.addWidget(self.editCommentButton)
         buttonLayout.addWidget(self.insertVariation)
         buttonLayout.addWidget(self.delVariation)
-        buttonLayout.addStretch()
         
         mainLayout.addWidget(self.commentsBox)
         mainLayout.addLayout(buttonLayout)
@@ -592,7 +590,7 @@ class commentsDisplay(QWidget):
         p = self.commentsBox.toHtml()
         p = re.sub("<br /><br /><a href.*</html>", "", p, re.S)
         dialog.commentsBox.setHtml(p)
-        if dialog.exec_() == QDialog.Accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             b = dialog.commentsBox.toHtml()
             b = b.replace("\n", "").replace("</p></body></html>", "")
             text = re.sub('^<.*?px;">', "", b, re.S)
@@ -653,4 +651,4 @@ if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	w = faceDisplay(None)
 	w.show()
-	sys.exit(app.exec_())
+	sys.exit(app.exec())

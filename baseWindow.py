@@ -4,10 +4,10 @@
 
 
 import os, sys, glob
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from goBoard import goBoard
 from customDock import *
 from settingData import settingData
@@ -41,7 +41,7 @@ class baseWindow(QMainWindow):
     
     def addToLayout(self):
         self.mainLayout.addWidget(self.board)
-        self.mainLayout.setAlignment(self.board, Qt.AlignHCenter | Qt.AlignVCenter)
+        self.mainLayout.setAlignment(self.board, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
     
     def adjustBoardSize(self):
         l = min(self.mainLayout.contentsRect().width(), self.mainLayout.contentsRect().height())
@@ -191,63 +191,63 @@ class baseWindow(QMainWindow):
     def initDockwidget(self):
         self.sgfExplorerDock = sgfExplorerDock("Sgf explorer", self)
         self.sgfExplorerDock.setObjectName("Sgf explorer")
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.sgfExplorerDock)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.sgfExplorerDock)
         
         self.recentGamesDock = recentGamesDock("Recent games", self)
         self.recentGamesDock.setObjectName("Recent games")
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.recentGamesDock)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.recentGamesDock)
         
         self.infoDock = infoDock("Information", self)
         self.infoDock.setObjectName("Information")
-        self.addDockWidget(Qt.RightDockWidgetArea, self.infoDock)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.infoDock)
         
         self.commentsDock = commentsDock("Comments", self)
         self.commentsDock.setObjectName("Comments")
-        self.addDockWidget(Qt.RightDockWidgetArea, self.commentsDock)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.commentsDock)
         
         self.controlDock = controlDock("Control", self)
         self.controlDock.setObjectName("Control")
-        self.addDockWidget(Qt.BottomDockWidgetArea, self.controlDock)
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.controlDock)
         
         self.consoleDock = consoleDock("Console", self)
         self.consoleDock.setObjectName("Console")
-        self.addDockWidget(Qt.RightDockWidgetArea, self.consoleDock)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.consoleDock)
         
-        self.setCorner(Qt.BottomLeftCorner, Qt.LeftDockWidgetArea)
-        self.setCorner(Qt.BottomRightCorner, Qt.RightDockWidgetArea)
-        self.setCorner(Qt.TopLeftCorner, Qt.LeftDockWidgetArea)
-        self.setCorner(Qt.TopRightCorner, Qt.RightDockWidgetArea)
+        self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
+        self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.setCorner(Qt.Corner.TopRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
     
     def initStatusBar(self):
         self.modeLabel = QLabel()
         self.statusBar().addPermanentWidget(self.modeLabel)
     
     def setAllShortcuts(self):
-        self.toStartAction.setShortcuts(QKeySequence(self.settingData.previousToStart))
-        self.fastPrevAction.setShortcuts(QKeySequence(self.settingData.previous10Steps))
-        self.prevAction.setShortcuts(QKeySequence(self.settingData.previousStep))
-        self.nextAction.setShortcuts(QKeySequence(self.settingData.nextStep))
-        self.fastNextAction.setShortcuts(QKeySequence(self.settingData.next10Steps))
-        self.toEndAction.setShortcuts(QKeySequence(self.settingData.nextToEnd))
-        self.backAction.setShortcuts(QKeySequence(self.settingData.back))
+        self.toStartAction.setShortcut(QKeySequence(self.settingData.previousToStart))
+        self.fastPrevAction.setShortcut(QKeySequence(self.settingData.previous10Steps))
+        self.prevAction.setShortcut(QKeySequence(self.settingData.previousStep))
+        self.nextAction.setShortcut(QKeySequence(self.settingData.nextStep))
+        self.fastNextAction.setShortcut(QKeySequence(self.settingData.next10Steps))
+        self.toEndAction.setShortcut(QKeySequence(self.settingData.nextToEnd))
+        self.backAction.setShortcut(QKeySequence(self.settingData.back))
     
     def printGo_(self):
         printer = QPrinter()
         printDialog = QPrintDialog(printer, self)
-        if printDialog.exec_() == QDialog.Accepted:
+        if printDialog.exec() == QDialog.DialogCode.Accepted:
             self.handlePaintRequest(printer)
     
     def printGoPreview_(self):
         dialog = QPrintPreviewDialog()
         dialog.paintRequested.connect(self.handlePaintRequest)
-        dialog.exec_()
+        dialog.exec()
     
     def handlePaintRequest(self, printer):
         painter = QPainter(printer)
         rect = painter.viewport()
         pix = self.board.grab(self.board.rect())
         size = pix.size()
-        size.scale(rect.size(), Qt.KeepAspectRatio)
+        size.scale(rect.size(), Qt.AspectRatioMode.KeepAspectRatio)
         painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
         painter.setWindow(pix.rect())
         painter.drawPixmap(0, 0, pix)

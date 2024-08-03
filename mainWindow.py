@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # filename: mainWindow.py  
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtMultimedia import QSoundEffect, QSound
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtMultimedia import QSoundEffect, QMediaPlayer, QAudioOutput
 from baseWindow import baseWindow
 from sgfData import *
 from faceDict import faceDict
@@ -27,7 +27,10 @@ class mainWindow(baseWindow):
         self.withCoordinate.setChecked(self.settingData.withCoordinate)
         self.hideCursor.setChecked(self.settingData.hideCursor)
         self.backgroundMusic.setChecked(self.settingData.backgroundMusic)
-        self.musicEquipment = QSound(self.settingData.musicPath)
+        self.musicEquipment = QMediaPlayer()
+        self.audioDevice = QAudioOutput()
+        self.musicEquipment.setAudioOutput(self.audioDevice)
+        self.musicEquipment.setSource(QUrl(self.settingData.musicPath))
         self.musicEquipment.setLoops(99)
         if self.settingData.backgroundMusic:
             self.musicEquipment.play()
@@ -79,7 +82,7 @@ class mainWindow(baseWindow):
         
         self.boardNoStyle.triggered.connect(self.changeBoardStyle_)
         for changeStyle in self.allBoardStyles:
-            exec(f"self.board{changeStyle}.triggered.connect(self.changeBoardStyle_)")        
+            eval(f"self.board{changeStyle}.triggered.connect(self.changeBoardStyle_)") 
         
         self.size9.triggered.connect(self.size9_)
         self.size13.triggered.connect(self.size13_)
@@ -352,7 +355,7 @@ class mainWindow(baseWindow):
                 self.commentsDock.commentsDisplay.commentsBox.insertHtml(self.faceConvert(com))
             var = self.sgfData.stepsList[self.stepPoint - 1].variations
             if var != []:
-                self.commentsDock.commentsDisplay.commentsBox.moveCursor(QTextCursor.End)
+                self.commentsDock.commentsDisplay.commentsBox.moveCursor(QTextCursor.MoveOperation.End)
                 self.commentsDock.commentsDisplay.commentsBox.insertHtml(self.formatVariation())
         
     def faceConvert(self, c):
@@ -446,7 +449,7 @@ class mainWindow(baseWindow):
             dialog.gameInfoBox.tmLine.setText("7200")
             dialog.gameInfoBox.tcLine.setValue(5)
             dialog.gameInfoBox.ttLine.setText("60")
-        if dialog.exec_() == QDialog.Accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             t = re.sub(r'[\\/:*?"<>|\r\n]+', "_", self.sgfData.title)
             f, filt= QFileDialog.getSaveFileName(None, "Save as", os.path.join(self.settingData.sgfPath, t), "Go records file(*.sgf)")
             if f:
@@ -496,7 +499,7 @@ class mainWindow(baseWindow):
         dialog.optionsBox.autoSkip.setChecked(self.settingData.autoSkip)
         dialog.optionsBox.acceptDragDrop.setChecked(self.settingData.acceptDragDrop)
         dialog.optionsBox.intervalSpinBox.setValue(self.settingData.autoReviewInterval)
-        if dialog.exec_() == QDialog.Accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             self.settingData.sgfPath = dialog.pathsBox.sgfPath.text()
             self.sgfExplorerDock.sgfExplorerDisplay.syncPath()
             self.settingData.musicPath = dialog.pathsBox.customMusic.text()
@@ -532,19 +535,19 @@ class mainWindow(baseWindow):
         self.settingData.effectSounds = b
     
     def changeBoardStyle_(self):
-        style = self.sender().text().lower()
+        style = self.sender().iconText().lower()
         if self.settingData.boardStyle != style:
             self.settingData.boardStyle = style
             self.board.setBoardStyle(style)        
     
     def changeStepsNumber_(self):
-        text = self.sender().text().lower()
+        text = self.sender().iconText().lower()
         if self.settingData != text:
             self.settingData.stepsNumber = text
             self.board.update()
     
     def keyPressEvent(self, e):
-        if e.modifiers() == Qt.ControlModifier and e.key() == Qt.Key_F:
+        if e.modifiers() == Qt.KeyboardModifier.ControlModifier and e.key() == Qt.Key.Key_F:
             self.controlDock.controlWidget.stepsCount.selectAll()
             self.controlDock.controlWidget.stepsCount.setFocus(Qt.ShortcutFocusReason)
     
