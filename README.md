@@ -3,7 +3,7 @@
 
 ### Dependency:
 * python >= 3.6
-* PyQt6 (python and Qt5 bindings)
+* PyQt6 (python and Qt6 bindings)
 
 ### Run:
 * navigate to source dir in console and type: `python foxGo2.py` in console to run the application
